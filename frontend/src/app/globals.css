@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-gradient-to-b from-gray-50 to-white text-gray-800;
+}
+
+/* Premium Input */
+.input {
+  @apply w-full border border-gray-200 rounded-xl px-5 py-3 
+  focus:ring-2 focus:ring-orange-500 focus:border-orange-400
+  outline-none transition-all duration-200 bg-white shadow-sm;
+}
+
+/* Premium Button */
+.btn {
+  @apply bg-orange-500 hover:bg-orange-600 
+  text-white font-medium px-6 py-3 
+  rounded-xl shadow-md hover:shadow-lg 
+  transition-all duration-200;
+}
+
+/* Secondary Button */
+.btn-outline {
+  @apply border border-orange-500 text-orange-500 
+  px-6 py-3 rounded-xl hover:bg-orange-50 
+  transition-all duration-200;
+}
