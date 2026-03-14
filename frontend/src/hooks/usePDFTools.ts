@@ -27,8 +27,10 @@ export const usePDFTools = () => {
 
       const mergedBytes =
         await mergedPdf.save();
+      const mergedFileBytes =
+        Uint8Array.from(mergedBytes);
 
-      return new File([mergedBytes], "merged.pdf", {
+      return new File([mergedFileBytes], "merged.pdf", {
         type: "application/pdf",
       });
     } catch (error) {

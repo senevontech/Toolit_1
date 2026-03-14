@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import * as pdfjsLib from "pdfjs-dist/build/pdf";
+import { getDocument, GlobalWorkerOptions, version } from "pdfjs-dist";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+GlobalWorkerOptions.workerSrc =
+  `https://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.min.mjs`;
 
 export default function PDFToTXT() {
   const [text, setText] = useState("");
@@ -12,7 +12,7 @@ export default function PDFToTXT() {
   const handleFile = async (file: File) => {
     const arrayBuffer = await file.arrayBuffer();
 
-    const pdf = await pdfjsLib.getDocument({
+    const pdf = await getDocument({
       data: arrayBuffer,
     }).promise;
 
