@@ -49,6 +49,7 @@ export type ToolType = {
   slug: string;
   description: string;
   category: string;
+  icon?: string;
   component: React.ComponentType<any>;
 };
 
@@ -61,6 +62,7 @@ name:"Image Compressor",
 slug:"image-compressor",
 description:"Reduce image file size without losing quality.",
 category:"Image Tools",
+icon:"🗜️",
 component:ImageCompressor
 },
 
@@ -69,6 +71,7 @@ name:"Image Resizer",
 slug:"image-resizer",
 description:"Resize image dimensions easily.",
 category:"Image Tools",
+icon:"↔️",
 component:ImageResizer
 },
 
@@ -77,6 +80,7 @@ name:"PNG to JPG Converter",
 slug:"png-jpg-converter",
 description:"Convert PNG images to JPG format.",
 category:"Image Tools",
+icon:"🔄",
 component:PNGJPGConverter
 },
 
@@ -85,6 +89,7 @@ name:"WebP Converter",
 slug:"webp-converter",
 description:"Convert images to WebP format.",
 category:"Image Tools",
+icon:"🌐",
 component:WebPConverter
 },
 
@@ -93,6 +98,7 @@ name:"Watermark Image",
 slug:"watermark-image",
 description:"Add watermark to images.",
 category:"Image Tools",
+icon:"💧",
 component:WatermarkImage
 },
 
@@ -103,6 +109,7 @@ name:"Merge PDF",
 slug:"merge-pdf",
 description:"Combine multiple PDFs into one file.",
 category:"Document Tools",
+icon:"🔗",
 component:MergePDF
 },
 
@@ -111,6 +118,7 @@ name:"Split PDF",
 slug:"split-pdf",
 description:"Split PDF into separate pages.",
 category:"Document Tools",
+icon:"✂️",
 component:SplitPDF
 },
 
@@ -119,6 +127,7 @@ name:"Rotate PDF",
 slug:"rotate-pdf",
 description:"Rotate PDF pages.",
 category:"Document Tools",
+icon:"🔃",
 component:RotatePDF
 },
 
@@ -127,6 +136,7 @@ name:"Protect PDF",
 slug:"protect-pdf",
 description:"Add password to PDF.",
 category:"Document Tools",
+icon:"🔒",
 component:ProtectPDF
 },
 
@@ -135,6 +145,7 @@ name:"Unlock PDF",
 slug:"unlock-pdf",
 description:"Remove password from PDF.",
 category:"Document Tools",
+icon:"🔓",
 component:UnlockPDF
 },
 
@@ -145,6 +156,7 @@ name:"PDF to Word",
 slug:"pdf-to-word",
 description:"Convert PDF files to editable Word documents.",
 category:"Document Tools",
+icon:"📝",
 component:PDFToWord
 },
 
@@ -153,6 +165,7 @@ name:"Word to PDF",
 slug:"word-to-pdf",
 description:"Convert Word documents into PDF format.",
 category:"Document Tools",
+icon:"📑",
 component:WordToPDF
 },
 
@@ -161,6 +174,7 @@ name:"PDF to Excel",
 slug:"pdf-to-excel",
 description:"Extract tables from PDF into Excel format.",
 category:"Document Tools",
+icon:"📊",
 component:PDFToExcel
 },
 
@@ -169,6 +183,7 @@ name:"Excel to PDF",
 slug:"excel-to-pdf",
 description:"Convert Excel spreadsheets into PDF files.",
 category:"Document Tools",
+icon:"📋",
 component:ExcelToPDF
 },
 
@@ -177,6 +192,7 @@ name:"PDF to PowerPoint",
 slug:"pdf-to-powerpoint",
 description:"Convert PDF files into PowerPoint slides.",
 category:"Document Tools",
+icon:"📽️",
 component:PDFToPowerPoint
 },
 
@@ -185,6 +201,7 @@ name:"PowerPoint to PDF",
 slug:"powerpoint-to-pdf",
 description:"Convert PowerPoint presentations into PDF.",
 category:"Document Tools",
+icon:"🎯",
 component:PowerPointToPDF
 },
 
@@ -193,6 +210,7 @@ name:"PDF to TXT",
 slug:"pdf-to-txt",
 description:"Extract text from PDF files.",
 category:"Document Tools",
+icon:"📃",
 component:PDFToTXT
 },
 
@@ -201,6 +219,7 @@ name:"TXT to PDF",
 slug:"txt-to-pdf",
 description:"Convert plain text files into PDF format.",
 category:"Document Tools",
+icon:"📄",
 component:TXTToPDF
 },
 
@@ -209,6 +228,7 @@ name:"Word to HTML",
 slug:"word-to-html",
 description:"Convert Word documents into HTML code.",
 category:"Document Tools",
+icon:"🌐",
 component:WordToHTML
 },
 
@@ -219,6 +239,7 @@ name:"JSON Formatter",
 slug:"json-formatter",
 description:"Beautify and format JSON.",
 category:"Developer Tools",
+icon:"🔧",
 component:JSONFormatter
 },
 
@@ -227,6 +248,7 @@ name:"QR Generator",
 slug:"qr-generator",
 description:"Generate QR code instantly.",
 category:"Developer Tools",
+icon:"⬛",
 component:QRGenerator
 },
 
@@ -235,6 +257,7 @@ name:"Base64 Tool",
 slug:"base64-tool",
 description:"Encode and decode Base64.",
 category:"Developer Tools",
+icon:"🔐",
 component:Base64Tool
 },
 
@@ -245,6 +268,7 @@ name:"GST Calculator",
 slug:"gst-calculator",
 description:"Calculate GST easily.",
 category:"Calculators",
+icon:"💰",
 component:GSTCalculator
 },
 
@@ -253,6 +277,7 @@ name:"EMI Calculator",
 slug:"emi-calculator",
 description:"Calculate EMI quickly.",
 category:"Calculators",
+icon:"🏦",
 component:EMICalculator
 },
 
@@ -261,6 +286,7 @@ name:"Age Calculator",
 slug:"age-calculator",
 description:"Calculate your age.",
 category:"Calculators",
+icon:"🎂",
 component:AgeCalculator
 },
 
@@ -269,6 +295,7 @@ name:"Percentage Calculator",
 slug:"percentage-calculator",
 description:"Calculate percentage instantly.",
 category:"Calculators",
+icon:"📊",
 component:PercentageCalculator
 },
 
@@ -277,6 +304,7 @@ name:"SIP Calculator",
 slug:"sip-calculator",
 description:"Calculate SIP investment growth.",
 category:"Calculators",
+icon:"📈",
 component:SIPCalculator
 }
 
