@@ -5,29 +5,12 @@ import { useState } from "react";
 export default function UnlockPDF() {
   const [file, setFile] = useState<File | null>(null);
   const [password, setPassword] = useState("");
+  const unsupportedMessage =
+    "PDF password removal is not implemented in this project yet. It needs a dedicated backend PDF utility.";
 
   const handleUnlock = async () => {
     if (!file || !password) return;
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("password", password);
-
-    const res = await fetch("/api/unlock-pdf", {
-      method: "POST",
-      body: formData,
-    });
-
-    const blob = await res.blob();
-
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "unlocked.pdf";
-    a.click();
-
-    URL.revokeObjectURL(url);
+    alert(unsupportedMessage);
   };
 
   return (
@@ -59,6 +42,10 @@ export default function UnlockPDF() {
       >
         Unlock PDF
       </button>
+
+      <p className="mt-4 max-w-md text-sm text-amber-700">
+        {unsupportedMessage}
+      </p>
     </div>
   );
 }

@@ -2,8 +2,9 @@
   "name": "tools-frontend",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build && node scripts/copy-export-to-dist.mjs",
+    "dev": "node scripts/clean-next.mjs && next dev",
+    "build": "node scripts/clean-next.mjs && next build && node scripts/copy-export-to-dist.mjs",
+    "clean": "node scripts/clean-next.mjs",
     "start": "next start"
   },
   "dependencies": {

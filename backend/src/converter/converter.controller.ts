@@ -125,4 +125,44 @@ export class ConverterController {
     res.send(result);
   }
 
+  @Post('word-pdf')
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  async wordToPdf(
+    @UploadedFile() file: Express.Multer.File,
+    @Res() res: Response,
+  ) {
+    if (!file) {
+      throw new BadRequestException('File not uploaded');
+    }
+
+    const result = await this.converterService.wordToPdf(file.path);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=converted.pdf',
+    });
+
+    res.send(result);
+  }
+
+  @Post('word-html')
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  async wordToHtml(
+    @UploadedFile() file: Express.Multer.File,
+    @Res() res: Response,
+  ) {
+    if (!file) {
+      throw new BadRequestException('File not uploaded');
+    }
+
+    const result = await this.converterService.wordToHtml(file.path);
+
+    res.set({
+      'Content-Type': 'text/html; charset=utf-8',
+      'Content-Disposition': 'attachment; filename=converted.html',
+    });
+
+    res.send(result);
+  }
+
 }

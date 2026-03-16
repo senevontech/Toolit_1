@@ -1,36 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { convertFile } from "@/lib/api";
+
+const UNSUPPORTED_MESSAGE =
+  "PDF to PowerPoint is not supported by the current backend.";
 
 export default function PDFToPowerPoint() {
 
   const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const convert = async () => {
 
     if (!file) return;
-
-    try {
-
-      setLoading(true);
-
-      await convertFile(
-        "/converter/pdf-ppt",
-        file,
-        "converted.pptx"
-      );
-
-    } catch (err) {
-
-      alert("Conversion failed");
-
-    } finally {
-
-      setLoading(false);
-
-    }
+    setError(UNSUPPORTED_MESSAGE);
 
   };
 
@@ -45,11 +28,15 @@ export default function PDFToPowerPoint() {
 
       <button
         onClick={convert}
-        disabled={!file || loading}
+        disabled={!file}
         className="mt-4 bg-blue-600 text-white px-4 py-2"
       >
-        {loading ? "Converting..." : "Convert to PowerPoint"}
+        Convert to PowerPoint
       </button>
+
+      <p className="mt-3 text-sm text-amber-700">{UNSUPPORTED_MESSAGE}</p>
+
+      {error && <p className="mt-3 text-red-500">{error}</p>}
 
     </div>
   );

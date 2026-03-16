@@ -64,6 +64,9 @@ export default function RootLayout({
               <Link href="/" className="btn-ghost">
                 Home
               </Link>
+              <Link href="/studio" className="btn-ghost">
+                Studio
+              </Link>
               <Link href="/privacy-policy" className="btn-ghost">
                 Privacy
               </Link>
@@ -73,9 +76,14 @@ export default function RootLayout({
               </Link>
             </nav>
 
-            <Link href="/" className="btn btn-sm md:hidden">
-              Tools
-            </Link>
+            <div className="flex items-center gap-2 md:hidden">
+              <Link href="/studio" className="btn-outline btn-sm">
+                Studio
+              </Link>
+              <Link href="/" className="btn btn-sm">
+                Tools
+              </Link>
+            </div>
           </div>
         </header>
 

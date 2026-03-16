@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 import { getToolBySlug, tools } from "@/lib/tools";
+import ToolRenderer from "@/components/tools/ToolRenderer";
 
 const CATEGORY_META: Record<string, { iconBg: string }> = {
   "Image Tools": { iconBg: "linear-gradient(145deg,#e9d8fd,#c4b5fd)" },
@@ -10,8 +11,6 @@ const CATEGORY_META: Record<string, { iconBg: string }> = {
   "Developer Tools": { iconBg: "linear-gradient(145deg,#bbf7d0,#86efac)" },
   "Calculators": { iconBg: "linear-gradient(145deg,#fed7aa,#fb923c)" },
 };
-
-export const dynamicParams = false;
 
 export function generateStaticParams() {
   return tools.map((tool) => ({
@@ -29,8 +28,6 @@ export default function ToolPage({
   if (!tool) {
     notFound();
   }
-
-  const Component = tool.component;
   const meta = CATEGORY_META[tool.category];
 
   return (
@@ -102,7 +99,7 @@ export default function ToolPage({
           </div>
         </div>
 
-        <Component />
+        <ToolRenderer slug={tool.slug} />
       </div>
     </div>
   );

@@ -1,35 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { convertFile } from "@/lib/api";
+
+const UNSUPPORTED_MESSAGE =
+  "PDF to Word is not supported by the current backend.";
 
 export default function PDFToWord() {
-
   const [file,setFile] = useState<File | null>(null);
-  const [loading,setLoading] = useState(false);
   const [error,setError] = useState("");
 
   const convert = async () => {
-
     if(!file) return;
-
-    try{
-
-      setLoading(true);
-      setError("");
-
-      await convertFile(
-        "/converter/pdf-word",
-        file,
-        "converted.docx"
-      );
-
-    }catch(err){
-      setError("Conversion failed. Please try again.");
-    }finally{
-      setLoading(false);
-    }
-
+    setError(UNSUPPORTED_MESSAGE);
   };
 
   return (
@@ -44,11 +26,13 @@ export default function PDFToWord() {
 
       <button
         onClick={convert}
-        disabled={!file || loading}
+        disabled={!file}
         className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
       >
-        {loading ? "Converting..." : "Convert to Word"}
+        Convert to Word
       </button>
+
+      <p className="mt-3 text-sm text-amber-700">{UNSUPPORTED_MESSAGE}</p>
 
       {error && (
         <p className="text-red-500 mt-3">{error}</p>

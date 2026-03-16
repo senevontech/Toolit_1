@@ -28,10 +28,14 @@ export const multerConfig = {
   fileFilter: (req, file, cb) => {
 
     const allowedTypes = [
-      '.pdf',
+      '.doc',
       '.docx',
+      '.xls',
       '.xlsx',
-      '.pptx'
+      '.ppt',
+      '.pptx',
+      '.pdf',
+      '.txt',
     ];
 
     const ext = extname(file.originalname).toLowerCase();
