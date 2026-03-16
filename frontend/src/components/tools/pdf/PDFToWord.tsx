@@ -7,11 +7,9 @@ const UNSUPPORTED_MESSAGE =
 
 export default function PDFToWord() {
   const [file,setFile] = useState<File | null>(null);
-  const [error,setError] = useState("");
 
   const convert = async () => {
     if(!file) return;
-    setError(UNSUPPORTED_MESSAGE);
   };
 
   return (
@@ -33,11 +31,6 @@ export default function PDFToWord() {
       </button>
 
       <p className="mt-3 text-sm text-amber-700">{UNSUPPORTED_MESSAGE}</p>
-
-      {error && (
-        <p className="text-red-500 mt-3">{error}</p>
-      )}
-
     </div>
   );
 }

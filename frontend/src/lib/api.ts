@@ -1,11 +1,23 @@
+const rawApiUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
+
 export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+  rawApiUrl && rawApiUrl.length > 0
+    ? rawApiUrl.replace(/\/$/, "")
+    : process.env.NODE_ENV === "development"
+      ? "http://localhost:5000"
+      : "";
 
 export async function convertFile(
   endpoint: string,
   file: File,
   downloadName: string
 ) {
+  if (!API_URL) {
+    throw new Error(
+      "Frontend is missing NEXT_PUBLIC_API_URL. Set it before deploying."
+    );
+  }
+
   const formData = new FormData();
   formData.append("file", file);
 

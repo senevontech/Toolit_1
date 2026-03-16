@@ -7,11 +7,9 @@ const UNSUPPORTED_MESSAGE =
 
 export default function PDFToExcel() {
   const [file, setFile] = useState<File | null>(null);
-  const [error, setError] = useState("");
 
   const convert = async () => {
     if (!file) return;
-    setError(UNSUPPORTED_MESSAGE);
   };
 
   return (
@@ -32,9 +30,6 @@ export default function PDFToExcel() {
       </button>
 
       <p className="mt-3 text-sm text-amber-700">{UNSUPPORTED_MESSAGE}</p>
-
-      {error && <p className="mt-3 text-red-500">{error}</p>}
-
     </div>
   );
 }
