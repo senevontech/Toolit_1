@@ -1,17 +1,18 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const primaryLinks = [
   { label: "Home", href: "/" },
-  { label: "Features", href: "/" },
-  { label: "About", href: "/" },
+  { label: "Features", href: "/#features" },
+  { label: "About", href: "/#about" },
   { label: "Privacy", href: "/privacy-policy" },
-  { label: "Pricing", href: "/" },
+  { label: "Pricing", href: "/studio" },
 ];
 
 const socialLinks = [
-  { label: "Facebook", href: "https://facebook.com" },
-  { label: "Instagram", href: "https://instagram.com" },
-  { label: "Website", href: "/" },
+  { label: "Facebook", href: "https://facebook.com", external: true },
+  { label: "Instagram", href: "https://instagram.com", external: true },
+  { label: "Website", href: "https://senevon.in", external: true },
 ];
 
 export default function Footer() {
@@ -32,14 +33,15 @@ export default function Footer() {
 
       <div className="brand-footer__content">
         <div className="brand-footer__hero">
-          <h2 className="brand-footer__wordmark">TOOLIT</h2>
+          <div className="brand-footer__wordmark-wrap">
+            <h2 className="brand-footer__wordmark">TOOLIT</h2>
+          </div>
           <p className="brand-footer__tagline">A product of Senevon INC</p>
         </div>
 
         <div className="brand-footer__nav-shell">
           <div className="brand-footer__nav-grid">
             <div className="brand-footer__column">
-              <p className="brand-footer__heading">Menu</p>
               <nav className="brand-footer__links" aria-label="Footer navigation">
                 {primaryLinks.map((item) => (
                   <Link key={item.label} href={item.href} className="brand-footer__link">
@@ -52,21 +54,32 @@ export default function Footer() {
             <div className="brand-footer__column">
               <p className="brand-footer__heading">Social</p>
               <div className="brand-footer__social-wrap">
-                <div className="brand-footer__emblem" aria-hidden>
-                  <span className="brand-footer__emblem-block" />
-                </div>
                 <nav className="brand-footer__links" aria-label="Social links">
                   {socialLinks.map((item) => (
-                    <Link key={item.label} href={item.href} className="brand-footer__link">
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      className="brand-footer__link"
+                      target={item.external ? "_blank" : undefined}
+                      rel={item.external ? "noreferrer" : undefined}
+                    >
                       {item.label}
-                    </Link>
+                    </a>
                   ))}
                 </nav>
               </div>
             </div>
           </div>
 
-          <p className="brand-footer__watermark">SENEVON</p>
+          <div className="brand-footer__logo-lockup" aria-hidden>
+            <Image
+              src="/logo/snv-logo.png"
+              alt=""
+              width={3264}
+              height={3264}
+              className="brand-footer__logo-mark"
+            />
+          </div>
         </div>
       </div>
 

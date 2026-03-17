@@ -2,9 +2,17 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { Outfit } from "next/font/google";
 import { Zap } from "lucide-react";
 
 import Footer from "@/components/layout/Footer";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
+  variable: "--font-geometric",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -30,17 +38,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className={`${outfit.variable} scroll-smooth`}>
       <body
-        style={{ background: "#e2e8f0" }}
+        style={{ background: "#e8e0d8" }}
         className="flex min-h-screen flex-col text-gray-700 antialiased"
       >
         <header
           className="sticky top-0 z-50"
           style={{
-            background: "linear-gradient(145deg, #edf1f7, #d8dfe9)",
-            boxShadow:
-              "0 6px 20px rgba(163,177,198,0.50), 0 2px 6px rgba(163,177,198,0.30), inset 0 1px 0 rgba(255,255,255,0.80)",
+            background: "#e8e0d8",
+            boxShadow: "none",
           }}
         >
           <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3.5">
@@ -60,27 +67,21 @@ export default function RootLayout({
               />
             </Link>
 
-            <nav className="hidden items-center gap-1.5 md:flex">
-              <Link href="/" className="btn-ghost">
+            <nav className="hidden items-center gap-2 md:flex">
+              <Link href="/" className="btn-ghost navbar-link">
                 Home
               </Link>
-              <Link href="/studio" className="btn-ghost">
-                Studio
-              </Link>
-              <Link href="/privacy-policy" className="btn-ghost">
+              <Link href="/privacy-policy" className="btn-ghost navbar-link">
                 Privacy
               </Link>
-              <Link href="/" className="btn btn-sm ml-1">
+              <Link href="/tools" className="btn btn-sm ml-1">
                 <Zap size={13} className="fill-white" />
                 All Tools
               </Link>
             </nav>
 
             <div className="flex items-center gap-2 md:hidden">
-              <Link href="/studio" className="btn-outline btn-sm">
-                Studio
-              </Link>
-              <Link href="/" className="btn btn-sm">
+              <Link href="/studio" className="btn btn-sm">
                 Tools
               </Link>
             </div>

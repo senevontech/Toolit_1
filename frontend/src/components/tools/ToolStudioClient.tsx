@@ -1,328 +1,237 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import {
-  startTransition,
-  useDeferredValue,
-  useEffect,
-  useState,
-} from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowUpRight,
-  Moon,
+  Calculator,
+  Code2,
+  FileText,
+  Image as ImageIcon,
   Search,
-  Sparkles,
-  SunMedium,
-  Wrench,
+  type LucideIcon,
 } from "lucide-react";
 
-import ToolRenderer from "@/components/tools/ToolRenderer";
-import { categories, getToolBySlug, tools } from "@/lib/tools";
-
-const ALL_TOOLS = "All Tools";
+import { categories, tools } from "@/lib/tools";
 
 const CATEGORY_META: Record<
   string,
-  { label: string; accent: string; soft: string; glow: string }
+  {
+    title: string;
+    description: string;
+    accent: string;
+    soft: string;
+    glow: string;
+    icon: LucideIcon;
+    eyebrow: string;
+  }
 > = {
   "Image Tools": {
-    label: "Pixels, format shifts and batch cleanup.",
-    accent: "#7c3aed",
-    soft: "rgba(196, 181, 253, 0.34)",
-    glow: "rgba(124, 58, 237, 0.22)",
+    title: "Image",
+    description: "Compress, resize & convert images",
+    accent: "#5b8dee",
+    soft: "rgba(91, 141, 238, 0.16)",
+    glow: "rgba(91, 141, 238, 0.34)",
+    icon: ImageIcon,
+    eyebrow: "Image",
   },
   "Document Tools": {
-    label: "PDF flows and office conversion tasks.",
-    accent: "#2563eb",
-    soft: "rgba(147, 197, 253, 0.32)",
-    glow: "rgba(37, 99, 235, 0.2)",
+    title: "Document",
+    description: "PDF, Word & Excel conversions",
+    accent: "#e07a5f",
+    soft: "rgba(224, 122, 95, 0.16)",
+    glow: "rgba(224, 122, 95, 0.34)",
+    icon: FileText,
+    eyebrow: "Document",
   },
   "Developer Tools": {
-    label: "Formatting, encoding and quick utility work.",
-    accent: "#059669",
-    soft: "rgba(110, 231, 183, 0.3)",
-    glow: "rgba(5, 150, 105, 0.22)",
+    title: "Developer",
+    description: "JSON, QR codes & Base64 utilities",
+    accent: "#3db36b",
+    soft: "rgba(61, 179, 107, 0.16)",
+    glow: "rgba(61, 179, 107, 0.34)",
+    icon: Code2,
+    eyebrow: "Developer",
   },
   Calculators: {
-    label: "Fast finance and daily math helpers.",
-    accent: "#ea580c",
-    soft: "rgba(253, 186, 116, 0.32)",
-    glow: "rgba(234, 88, 12, 0.24)",
+    title: "Calculator",
+    description: "GST, EMI, SIP & more",
+    accent: "#9b72e8",
+    soft: "rgba(155, 114, 232, 0.16)",
+    glow: "rgba(155, 114, 232, 0.34)",
+    icon: Calculator,
+    eyebrow: "Calculator",
   },
 };
 
-const FILTERS = [ALL_TOOLS, ...categories];
-
-const STATS = [
-  { label: "Tools online", value: `${tools.length}` },
-  { label: "Categories", value: `${categories.length}` },
-  { label: "Runs local", value: "Most" },
-];
-
 export default function ToolStudioClient() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [activeFilter, setActiveFilter] = useState<string>(ALL_TOOLS);
+  const [activeCategory, setActiveCategory] = useState<string>(categories[0] ?? "");
   const [search, setSearch] = useState("");
-  const [selectedSlug, setSelectedSlug] = useState(tools[0]?.slug ?? "");
   const deferredSearch = useDeferredValue(search);
 
-  useEffect(() => {
-    const savedTheme = window.localStorage.getItem("toolit-studio-theme");
+  const toolCounts = useMemo(
+    () =>
+      categories.reduce<Record<string, number>>((acc, category) => {
+        acc[category] = tools.filter((tool) => tool.category === category).length;
+        return acc;
+      }, {}),
+    []
+  );
 
-    if (savedTheme === "light" || savedTheme === "dark") {
-      setTheme(savedTheme);
-      return;
-    }
+  const visibleTools = useMemo(() => {
+    const query = deferredSearch.trim().toLowerCase();
 
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
+    return tools.filter((tool) => {
+      const matchesCategory = tool.category === activeCategory;
+      const matchesSearch =
+        !query ||
+        tool.name.toLowerCase().includes(query) ||
+        tool.description.toLowerCase().includes(query) ||
+        tool.slug.toLowerCase().includes(query);
 
-    setTheme(prefersDark ? "dark" : "light");
-  }, []);
+      return matchesCategory && matchesSearch;
+    });
+  }, [activeCategory, deferredSearch]);
 
-  useEffect(() => {
-    window.localStorage.setItem("toolit-studio-theme", theme);
-  }, [theme]);
-
-  const filteredTools = tools.filter((tool) => {
-    const searchValue = deferredSearch.trim().toLowerCase();
-    const matchesCategory =
-      activeFilter === ALL_TOOLS || tool.category === activeFilter;
-    const matchesSearch =
-      !searchValue ||
-      tool.name.toLowerCase().includes(searchValue) ||
-      tool.description.toLowerCase().includes(searchValue) ||
-      tool.slug.toLowerCase().includes(searchValue);
-
-    return matchesCategory && matchesSearch;
-  });
-
-  useEffect(() => {
-    if (!filteredTools.length) {
-      return;
-    }
-
-    const hasSelectedTool = filteredTools.some(
-      (tool) => tool.slug === selectedSlug,
-    );
-
-    if (!hasSelectedTool) {
-      setSelectedSlug(filteredTools[0].slug);
-    }
-  }, [filteredTools, selectedSlug]);
-
-  const selectedTool =
-    getToolBySlug(selectedSlug) ?? filteredTools[0] ?? tools[0] ?? null;
-
-  if (!selectedTool) {
-    return null;
-  }
-
-  const selectedMeta = CATEGORY_META[selectedTool.category];
+  const activeMeta = CATEGORY_META[activeCategory] ?? CATEGORY_META[categories[0]];
 
   const pageStyle = {
-    "--studio-accent": selectedMeta.accent,
-    "--studio-soft": selectedMeta.soft,
-    "--studio-glow": selectedMeta.glow,
+    "--studio-accent": activeMeta.accent,
+    "--studio-soft": activeMeta.soft,
+    "--studio-glow": activeMeta.glow,
   } as CSSProperties;
-
-  const handleSelectTool = (slug: string) => {
-    startTransition(() => {
-      setSelectedSlug(slug);
-    });
-
-    if (window.innerWidth < 1024) {
-      window.requestAnimationFrame(() => {
-        document
-          .getElementById("studio-view")
-          ?.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
-    }
-  };
 
   return (
     <div
-      data-studio-theme={theme}
-      className="studio-page"
+      data-studio-theme="light"
+      className="studio-page studio-browser-page"
       style={pageStyle}
     >
       <div className="studio-orb studio-orb-a" aria-hidden />
       <div className="studio-orb studio-orb-b" aria-hidden />
 
-      <div className="studio-shell">
-        <section className="studio-surface studio-hero">
-          <div className="studio-topbar">
-            <div className="studio-topbar-copy">
-              <span className="studio-kicker">
-                <Sparkles size={14} />
-                New workspace
-              </span>
-              <h1 className="studio-title">Tool Studio</h1>
-              <p className="studio-subtitle">
-                Every tool is wired into one dynamic workspace. Pick a tool,
-                switch theme, and work without leaving the page.
-              </p>
-            </div>
-
-            <div className="studio-actions">
-              <button
-                type="button"
-                className="studio-theme-toggle"
-                onClick={() =>
-                  setTheme((current) =>
-                    current === "light" ? "dark" : "light",
-                  )
-                }
-                aria-label={`Switch to ${
-                  theme === "light" ? "dark" : "light"
-                } mode`}
-              >
-                {theme === "light" ? <Moon size={16} /> : <SunMedium size={16} />}
-                <span>{theme === "light" ? "Dark mode" : "Light mode"}</span>
-              </button>
-
-              <Link href="/" className="studio-link-button">
-                Back Home
-              </Link>
-            </div>
-          </div>
-
-          <div className="studio-hero-grid">
-            <div className="studio-pressed studio-search-panel">
-              <label className="studio-label" htmlFor="studio-search">
-                Search tools
-              </label>
-              <div className="studio-search-wrap">
-                <Search size={17} />
-                <input
-                  id="studio-search"
-                  className="studio-search"
-                  type="text"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Try merge pdf, qr, gst..."
-                />
-              </div>
-
-              <div className="studio-filter-row">
-                {FILTERS.map((filter) => {
-                  const isActive = activeFilter === filter;
-
-                  return (
-                    <button
-                      key={filter}
-                      type="button"
-                      className={`studio-chip ${
-                        isActive ? "studio-chip-active" : ""
-                      }`}
-                      onClick={() => setActiveFilter(filter)}
-                    >
-                      {filter}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="studio-stat-grid">
-              {STATS.map((stat) => (
-                <div key={stat.label} className="studio-stat">
-                  <span className="studio-stat-value">{stat.value}</span>
-                  <span className="studio-stat-label">{stat.label}</span>
-                </div>
-              ))}
-            </div>
+      <div className="studio-browser-shell">
+        <section className="studio-browser-search-shell">
+          <div className="studio-browser-search">
+            <Search size={18} strokeWidth={2} />
+            <input
+              type="text"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search any tool..."
+              aria-label="Search tools"
+            />
           </div>
         </section>
 
-        <section className="studio-main-grid">
-          <aside className="studio-surface studio-sidebar">
-            <div className="studio-sidebar-head">
-              <div>
-                <p className="studio-panel-label">Tool rail</p>
-                <h2 className="studio-panel-title">
-                  {filteredTools.length} selectable tools
-                </h2>
-              </div>
-              <div className="studio-mini-badge">
-                <Wrench size={14} />
-                Live
-              </div>
-            </div>
+        <section className="studio-browser-categories">
+          <p className="studio-browser-label">Browse by category</p>
 
-            <div className="studio-tool-list">
-              {filteredTools.length ? (
-                filteredTools.map((tool) => {
-                  const isActive = selectedTool.slug === tool.slug;
+          <div className="studio-browser-cats-grid">
+            {categories.map((category) => {
+              const meta = CATEGORY_META[category];
+              const Icon = meta.icon;
+              const isActive = activeCategory === category;
 
-                  return (
-                    <button
-                      key={tool.slug}
-                      type="button"
-                      className={`studio-tool-button ${
-                        isActive ? "studio-tool-button-active" : ""
-                      }`}
-                      onClick={() => handleSelectTool(tool.slug)}
-                    >
-                      <span className="studio-tool-icon">{tool.icon ?? "T"}</span>
-                      <span className="studio-tool-copy">
-                        <span className="studio-tool-name">{tool.name}</span>
-                        <span className="studio-tool-description">
-                          {tool.description}
-                        </span>
-                      </span>
-                    </button>
-                  );
-                })
-              ) : (
-                <div className="studio-empty">
-                  <p>No tools match that filter.</p>
-                  <button
-                    type="button"
-                    className="studio-link-button"
-                    onClick={() => {
-                      setSearch("");
-                      setActiveFilter(ALL_TOOLS);
-                    }}
-                  >
-                    Reset filters
-                  </button>
-                </div>
-              )}
-            </div>
-          </aside>
-
-          <section
-            id="studio-view"
-            className="studio-surface studio-view-shell"
-          >
-            <div className="studio-view-head">
-              <div>
-                <p className="studio-panel-label">{selectedTool.category}</p>
-                <h2 className="studio-panel-title">{selectedTool.name}</h2>
-                <p className="studio-view-copy">{selectedTool.description}</p>
-              </div>
-
-              <div className="studio-view-actions">
-                <div className="studio-focus-note">{selectedMeta.label}</div>
-                <Link
-                  href={`/tools/${selectedTool.slug}`}
-                  className="studio-open-link"
+              return (
+                <button
+                  key={category}
+                  type="button"
+                  className={`studio-browser-cat${
+                    isActive ? " studio-browser-cat--active" : ""
+                  }`}
+                  onClick={() => setActiveCategory(category)}
+                  style={
+                    {
+                      "--browser-accent": meta.accent,
+                      "--browser-soft": meta.soft,
+                      "--browser-glow": meta.glow,
+                    } as CSSProperties
+                  }
+                  aria-pressed={isActive}
                 >
-                  Open dedicated page
-                  <ArrowUpRight size={15} />
-                </Link>
-              </div>
+                  <span className="studio-browser-cat__count">
+                    {toolCounts[category]}
+                  </span>
+                  <span className="studio-browser-cat__icon">
+                    <Icon size={22} strokeWidth={1.9} />
+                  </span>
+                  <span className="studio-browser-cat__title">{meta.title}</span>
+                  <span className="studio-browser-cat__desc">
+                    {meta.description}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="studio-browser-results">
+          <div className="studio-browser-results-head">
+            <div>
+              <h1>{activeCategory}</h1>
+              <p>
+                {visibleTools.length} tool{visibleTools.length === 1 ? "" : "s"}
+              </p>
             </div>
 
-            <div className="studio-category-line" />
+            {search ? (
+              <button
+                type="button"
+                className="studio-browser-clear"
+                onClick={() => setSearch("")}
+              >
+                Clear search
+              </button>
+            ) : null}
+          </div>
 
-            <div className="studio-view-frame">
-              <ToolRenderer slug={selectedTool.slug} />
+          {visibleTools.length ? (
+            <div className="studio-browser-card-grid">
+              {visibleTools.map((tool) => {
+                const ToolIcon = activeMeta.icon;
+
+                return (
+                  <Link
+                    key={tool.slug}
+                    href={`/tools/${tool.slug}`}
+                    className="studio-browser-card"
+                  >
+                    <div className="studio-browser-card__icon">
+                      <ToolIcon size={22} strokeWidth={1.9} />
+                    </div>
+
+                    <div className="studio-browser-card__copy">
+                      <p className="studio-browser-card__eyebrow">
+                        {activeMeta.eyebrow}
+                      </p>
+                      <h2>{tool.name}</h2>
+                      <p>{tool.description}</p>
+                    </div>
+
+                    <ArrowUpRight
+                      size={18}
+                      strokeWidth={2.2}
+                      className="studio-browser-card__arrow"
+                    />
+                  </Link>
+                );
+              })}
             </div>
-          </section>
+          ) : (
+            <div className="studio-browser-empty">
+              <h2>No tools match your search.</h2>
+              <p>Try a different keyword or clear the search to browse this category.</p>
+              <button
+                type="button"
+                className="studio-browser-clear"
+                onClick={() => setSearch("")}
+              >
+                Clear search
+              </button>
+            </div>
+          )}
         </section>
       </div>
     </div>

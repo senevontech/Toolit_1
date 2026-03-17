@@ -1,15 +1,42 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import {
+  ArrowLeft,
+  Calculator,
+  Code2,
+  FileText,
+  Image as ImageIcon,
+  Sparkles,
+  type LucideIcon,
+} from "lucide-react";
 
 import { getToolBySlug, tools } from "@/lib/tools";
 import ToolRenderer from "@/components/tools/ToolRenderer";
 
-const CATEGORY_META: Record<string, { iconBg: string }> = {
-  "Image Tools": { iconBg: "linear-gradient(145deg,#e9d8fd,#c4b5fd)" },
-  "Document Tools": { iconBg: "linear-gradient(145deg,#bfdbfe,#93c5fd)" },
-  "Developer Tools": { iconBg: "linear-gradient(145deg,#bbf7d0,#86efac)" },
-  "Calculators": { iconBg: "linear-gradient(145deg,#fed7aa,#fb923c)" },
+const CATEGORY_META: Record<
+  string,
+  {
+    icon: LucideIcon;
+    accent: string;
+  }
+> = {
+  "Image Tools": {
+    icon: ImageIcon,
+    accent: "#ff875c",
+  },
+  "Document Tools": {
+    icon: FileText,
+    accent: "#ff875c",
+  },
+  "Developer Tools": {
+    icon: Code2,
+    accent: "#ff875c",
+  },
+  Calculators: {
+    icon: Calculator,
+    accent: "#ff875c",
+  },
 };
 
 export function generateStaticParams() {
@@ -29,77 +56,47 @@ export default function ToolPage({
     notFound();
   }
   const meta = CATEGORY_META[tool.category];
+  const CategoryIcon = meta?.icon ?? Sparkles;
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ background: "#e2e8f0", padding: "2.5rem 1rem 4rem" }}
-    >
-      <div style={{ maxWidth: "56rem", margin: "0 auto" }}>
+    <div className="tool-page">
+      <div className="tool-page__shell">
         <Link
-          href="/"
-          className="btn-ghost btn-sm"
-          style={{ marginBottom: "1.5rem", display: "inline-flex" }}
+          href="/tools"
+          className="tool-page__back btn-ghost btn-sm"
         >
           <ArrowLeft size={14} />
           All Tools
         </Link>
 
-        <div
-          className="neu-card mb-8 flex items-start gap-5"
-          style={{ padding: "1.5rem 2rem" }}
-        >
-          {tool.icon && (
-            <div
-              className="flex flex-shrink-0 items-center justify-center text-2xl"
-              style={{
-                width: "3.5rem",
-                height: "3.5rem",
-                borderRadius: "1rem",
-                background:
-                  meta?.iconBg ??
-                  "linear-gradient(145deg,#edf1f7,#d5dce8)",
-                boxShadow:
-                  "5px 5px 10px rgba(163,177,198,0.55), -5px -5px 10px rgba(255,255,255,0.88), inset 1px 1px 2px rgba(255,255,255,0.60)",
-              }}
-            >
-              {tool.icon}
-            </div>
-          )}
-
-          <div className="min-w-0 flex-1">
-            <h1
-              className="text-2xl font-black leading-tight tracking-tight md:text-3xl"
-              style={{ color: "#2d3748" }}
-            >
-              {tool.name}
-            </h1>
-            <p
-              style={{
-                color: "#8fa0b8",
-                fontSize: "0.875rem",
-                marginTop: "0.35rem",
-              }}
-            >
-              {tool.description}
-            </p>
-            <span
-              className="mt-3 inline-block text-xs font-bold uppercase tracking-wider"
-              style={{
-                background: "linear-gradient(145deg,#edf1f7,#d5dce8)",
-                boxShadow:
-                  "3px 3px 6px rgba(163,177,198,0.52), -3px -3px 6px rgba(255,255,255,0.85)",
-                borderRadius: "999px",
-                padding: "0.3rem 0.85rem",
-                color: "#5a6478",
-              }}
-            >
-              {tool.category}
-            </span>
+        <section className="tool-page__hero neu-card">
+          <div
+            className="tool-page__hero-icon"
+            style={{ "--tool-accent": meta?.accent ?? "#ff875c" } as CSSProperties}
+          >
+            <CategoryIcon size={34} strokeWidth={2.1} />
           </div>
-        </div>
 
-        <ToolRenderer slug={tool.slug} />
+          <div className="tool-page__hero-copy">
+            <h1 className="tool-page__title tool-page__title--compact">{tool.name}</h1>
+
+            <div className="tool-page__meta-row">
+              <span className="tool-page__meta-pill">{tool.category}</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="tool-page__workspace neu-card">
+          <div className="tool-page__workspace-head">
+            <div>
+              <h2>Workspace</h2>
+            </div>
+          </div>
+
+          <div className="tool-page__workspace-body">
+            <ToolRenderer slug={tool.slug} />
+          </div>
+        </section>
       </div>
     </div>
   );
