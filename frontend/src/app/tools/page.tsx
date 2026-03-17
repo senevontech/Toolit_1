@@ -1,1 +1,5 @@
-export { default } from "../home2/page";
+import AllToolsClient from "../home2/AllToolsClient";
+
+export default function ToolsPage() {
+  return <AllToolsClient />;
+}
