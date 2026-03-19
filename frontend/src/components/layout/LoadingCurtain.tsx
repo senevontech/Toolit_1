@@ -25,21 +25,15 @@ export default function LoadingCurtain() {
 
   return (
     <div className={`curtain${phase === "lifting" ? " curtain--lift" : ""}`}>
-      <div className="curtain__card">
-        <div className="curtain__logo">
-          <Image
-            src="/logo/logo-black.png"
-            alt="Toolegend"
-            width={160}
-            height={52}
-            priority
-            style={{ objectFit: "contain" }}
-          />
-        </div>
-        <p className="curtain__tagline">Free tools. Instant results.</p>
-        <div className="curtain__dots">
-          <span /><span /><span />
-        </div>
+      <div className="curtain__logo">
+        <Image
+          src="/logo/logo-black.png"
+          alt="Toolegend"
+          width={160}
+          height={52}
+          priority
+          style={{ objectFit: "contain" }}
+        />
       </div>
     </div>
   );
