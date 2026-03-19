@@ -1,6 +1,6 @@
 "use client";
 
-import { type CSSProperties, useMemo, useState } from "react";
+import { type CSSProperties, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -34,6 +34,20 @@ const CATEGORY_META: Record<
 export default function AllToolsClient() {
   const [activeCategory, setActiveCategory] = useState<string>(categories[0]);
   const [search, setSearch] = useState("");
+
+  // On hard refresh, reapply the last color-engine theme from localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("nm-theme");
+      if (saved) {
+        const vars = JSON.parse(saved) as Record<string, string>;
+        const root = document.documentElement;
+        for (const [key, value] of Object.entries(vars)) {
+          root.style.setProperty(key, value);
+        }
+      }
+    } catch {}
+  }, []);
 
   const isSearching = search.trim().length > 0;
 

@@ -1,0 +1,256 @@
+/* =========================================================
+   WHO MADE IT — Hidden page
+   Matches dynamic neumorphism design system
+   ========================================================= */
+
+.wmi-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 18% 8%,  var(--nm-glow-soft) 0, transparent 22rem),
+    radial-gradient(circle at 82% 14%, var(--nm-glow)      0, transparent 26rem),
+    linear-gradient(180deg, var(--nm-surface) 0%, var(--nm-bg) 100%);
+  color: var(--nm-text);
+  font-family: var(--font-geometric), system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 72px 28px 80px;
+  gap: 56px;
+  overflow-x: clip;
+}
+
+/* ── HEADER ── */
+.wmi-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: 560px;
+  animation: wmi-fade-in 0.55s ease both;
+}
+
+.wmi-eyebrow {
+  display: inline-flex;
+  padding: 7px 20px;
+  border-radius: 100px;
+  background: var(--nm-bg);
+  box-shadow: var(--nm-shadow-out);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--nm-accent-ink);
+  margin: 0;
+}
+
+.wmi-title {
+  font-size: clamp(2.4rem, 7vw, 4rem);
+  font-weight: 900;
+  letter-spacing: -2px;
+  color: var(--nm-text);
+  margin: 0;
+  line-height: 1.05;
+}
+
+.wmi-subtitle {
+  font-size: 0.95rem;
+  color: var(--nm-text-muted);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ── GRID SECTION ── */
+.wmi-grid-section {
+  width: 100%;
+  max-width: 860px;
+}
+
+.wmi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+}
+
+/* ── CARD ── */
+.wmi-card {
+  border-radius: 24px;
+  background: var(--nm-bg);
+  box-shadow: var(--nm-shadow-lg);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+  transition: box-shadow 0.28s ease, transform 0.2s ease;
+  animation: wmi-card-in 0.5s ease both;
+}
+
+.wmi-card:hover {
+  box-shadow: var(--nm-shadow-hover);
+  transform: translateY(-2px);
+}
+
+/* Stagger card animations */
+.wmi-card:nth-child(1) { animation-delay: 0.08s; }
+.wmi-card:nth-child(2) { animation-delay: 0.16s; }
+.wmi-card:nth-child(3) { animation-delay: 0.24s; }
+.wmi-card:nth-child(4) { animation-delay: 0.32s; }
+
+/* ── AVATAR ── */
+.wmi-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--nm-accent);
+  color: var(--nm-on-accent);
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow:
+    8px 8px 20px var(--nm-shadow-dark-color),
+    -8px -8px 20px var(--nm-shadow-light-color),
+    0 0 0 4px var(--nm-bg),
+    0 0 0 6px var(--nm-accent-soft);
+  transition: box-shadow 0.25s ease;
+}
+
+.wmi-card:hover .wmi-avatar {
+  box-shadow:
+    var(--nm-shadow-accent-press),
+    0 0 0 4px var(--nm-bg),
+    0 0 18px var(--nm-glow);
+}
+
+/* ── CARD BODY ── */
+.wmi-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.wmi-name {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--nm-text);
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.wmi-role {
+  display: inline-flex;
+  padding: 5px 16px;
+  border-radius: 100px;
+  background: var(--nm-bg);
+  box-shadow: var(--nm-shadow-in);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--nm-accent-ink);
+}
+
+.wmi-email {
+  font-size: 0.82rem;
+  color: var(--nm-text-muted);
+  text-decoration: none;
+  word-break: break-all;
+  transition: color 0.2s ease;
+}
+
+.wmi-email:hover {
+  color: var(--nm-accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── FOOTER NOTE ── */
+.wmi-footer-note {
+  animation: wmi-fade-in 0.55s 0.45s ease both;
+}
+
+.wmi-footer-text {
+  font-size: 0.78rem;
+  color: var(--nm-text-muted);
+  margin: 0;
+  text-align: center;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes wmi-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes wmi-card-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .wmi-page {
+    padding: 52px 18px 60px;
+    gap: 40px;
+  }
+
+  .wmi-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .wmi-title {
+    font-size: clamp(2rem, 10vw, 3rem);
+    letter-spacing: -1.5px;
+  }
+
+  .wmi-card {
+    padding: 28px 22px;
+    flex-direction: row;
+    text-align: left;
+    gap: 20px;
+  }
+
+  .wmi-card-body {
+    align-items: flex-start;
+  }
+
+  .wmi-avatar {
+    width: 64px;
+    height: 64px;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 400px) {
+  .wmi-page {
+    padding: 40px 14px 52px;
+  }
+
+  .wmi-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .wmi-card-body {
+    align-items: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wmi-card,
+  .wmi-header,
+  .wmi-footer-note {
+    animation: none;
+  }
+}

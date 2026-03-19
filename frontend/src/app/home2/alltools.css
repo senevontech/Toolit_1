@@ -22,10 +22,23 @@
 
 /* ── Page shell ── */
 .at-page {
+  /* Derive --at-* from the live color engine variables so this page
+     responds to the home-page color engine. Fallbacks match the
+     original static values for pages loaded without the engine. */
+  --at-bg:       var(--nm-bg,                   #ece8e1);
+  --at-text:     var(--nm-text,                 #1c1612);
+  --at-muted:    var(--nm-text-muted,           #8e867e);
+  --at-sh-out:   var(--nm-shadow-out,           6px 6px 16px #cec8c0, -6px -6px 16px #ffffff);
+  --at-sh-in:    var(--nm-shadow-in,            inset 4px 4px 12px #cec8c0, inset -4px -4px 12px #ffffff);
+  --at-sh-lg:    var(--nm-shadow-lg,            10px 10px 24px #c8c2ba, -10px -10px 24px #ffffff);
+  --at-sh-sm:    3px 3px 8px var(--nm-shadow-dark-color,  #cec8c0), -3px -3px 8px var(--nm-shadow-light-color,  #ffffff);
+  --at-sh-press: var(--nm-shadow-press,         inset 3px 3px 9px #c8c2ba, inset -3px -3px 9px #ffffff);
+
   min-height: 100vh;
   background: var(--at-bg);
   color: var(--at-text);
   font-family: var(--font-geometric), system-ui, sans-serif;
+  transition: background 0.45s ease, color 0.35s ease;
 }
 
 /* ============================================================

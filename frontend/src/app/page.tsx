@@ -12,6 +12,8 @@ import {
   Maximize2,
   SlidersHorizontal,
   X,
+  Copy,
+  Check,
   type LucideIcon,
 } from "lucide-react";
 import { tools } from "@/lib/tools";
@@ -96,38 +98,6 @@ const BASE_TEXT_RGB: RGBColor = { red: 66, green: 58, blue: 72 };
 const BASE_SHADOW_RGB: RGBColor = { red: 144, green: 149, blue: 160 };
 const BASE_SHADOW_STRONG_RGB: RGBColor = { red: 112, green: 118, blue: 132 };
 const INITIAL_RGB: RGBColor = { red: 139, green: 99, blue: 221 };
-const HOME_THEME_VAR_KEYS = [
-  "--nm-bg",
-  "--nm-surface",
-  "--nm-accent",
-  "--nm-accent-dark",
-  "--nm-accent-ink",
-  "--nm-text",
-  "--nm-text-muted",
-  "--nm-on-accent",
-  "--nm-on-accent-muted",
-  "--nm-glow",
-  "--nm-glow-soft",
-  "--nm-glow-strong",
-  "--nm-accent-soft",
-  "--nm-accent-surface",
-  "--nm-shadow-dark-color",
-  "--nm-shadow-dark-strong-color",
-  "--nm-shadow-light-color",
-  "--nm-shadow-out",
-  "--nm-shadow-in",
-  "--nm-shadow-lg",
-  "--nm-shadow-hover",
-  "--nm-shadow-press",
-  "--nm-shadow-accent-press",
-  "--nm-meter-color",
-  "--nm-meter-glow",
-  "--nm-footer-bg",
-  "--nm-footer-text",
-  "--nm-footer-text-muted",
-  "--nm-footer-text-soft",
-  "--nm-footer-border",
-] as const;
 
 const clampChannel = (value: number) => Math.max(0, Math.min(255, Math.round(value)));
 
@@ -258,6 +228,7 @@ export default function Home() {
   const [activeFeature, setActiveFeature] = useState(1);
   const [rgb, setRgb] = useState<RGBColor>(INITIAL_RGB);
   const [isThemeMeterOpen, setIsThemeMeterOpen] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const primaryFeaturedTools = useMemo(
     () => tools.filter((t) => FEATURED_PRIMARY_SLUGS.includes(t.slug)),
@@ -375,23 +346,24 @@ export default function Home() {
 
   useEffect(() => {
     const root = document.documentElement;
+    const vars = pageThemeStyle as Record<string, string>;
 
-    for (const [key, value] of Object.entries(pageThemeStyle as Record<string, string>)) {
+    for (const [key, value] of Object.entries(vars)) {
       root.style.setProperty(key, value);
     }
+
+    // Persist so other pages (e.g. /tools) can inherit the theme
+    try { localStorage.setItem("nm-theme", JSON.stringify(vars)); } catch {}
   }, [pageThemeStyle]);
 
   useEffect(() => {
     const body = document.body;
-    const root = document.documentElement;
 
     body.classList.add("nm-shell-active");
 
     return () => {
       body.classList.remove("nm-shell-active");
-      for (const key of HOME_THEME_VAR_KEYS) {
-        root.style.removeProperty(key);
-      }
+      // CSS vars intentionally kept on :root so SPA-navigated pages inherit the theme
     };
   }, []);
 
@@ -423,6 +395,12 @@ export default function Home() {
       ...current,
       [channel]: clampChannel(value),
     }));
+  };
+
+  const handleCopyHex = () => {
+    navigator.clipboard.writeText(activeTheme.accentHex).catch(() => {});
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
   };
 
   return (
@@ -499,18 +477,64 @@ export default function Home() {
             </div>
             <div className="nm-theme-orb-shell">
               <div className="nm-theme-orb">
-                <div
-                  className="nm-theme-orb-ring"
-                  style={
-                    {
-                      "--meter-value": `${Math.max(activeTheme.meterValue, 8)}%`,
-                    } as CSSProperties
-                  }
-                >
+                <div className="nm-theme-orb-ring">
+                  {/* SVG arc — gradient + rounded caps + glow bloom */}
+                  <svg
+                    className="nm-theme-orb-arc"
+                    viewBox="0 0 100 100"
+                    aria-hidden="true"
+                  >
+                    <defs>
+                      {/* White highlight → accent: simulates a "lit" neon feel */}
+                      <linearGradient id="nm-arc-grad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%"   stopColor="white"                        stopOpacity="0.92" />
+                        <stop offset="22%"  stopColor={rgbString(activeTheme.accent)} stopOpacity="0.82" />
+                        <stop offset="100%" stopColor={rgbString(activeTheme.accent)} stopOpacity="1"    />
+                      </linearGradient>
+                    </defs>
+
+                    {/* Glow bloom — wide blurred arc for soft ambient light */}
+                    <circle
+                      cx="50" cy="50" r="43"
+                      transform="rotate(-90 50 50)"
+                      style={{
+                        fill: "none",
+                        stroke: rgbString(activeTheme.accent),
+                        strokeWidth: 22,
+                        strokeLinecap: "round",
+                        strokeDasharray: `${(2 * Math.PI * 43 * Math.max(activeTheme.meterValue, 8) / 100).toFixed(3)} ${(2 * Math.PI * 43).toFixed(3)}`,
+                        opacity: 0.36,
+                        filter: "blur(5px)",
+                      }}
+                    />
+
+                    {/* Main arc — gradient + rounded ends */}
+                    <circle
+                      className="nm-theme-orb-arc-fill"
+                      cx="50"
+                      cy="50"
+                      r="43"
+                      transform="rotate(-90 50 50)"
+                      style={{
+                        strokeDasharray: `${(2 * Math.PI * 43 * Math.max(activeTheme.meterValue, 8) / 100).toFixed(3)} ${(2 * Math.PI * 43).toFixed(3)}`,
+                        stroke: "url(#nm-arc-grad)",
+                      }}
+                    />
+                  </svg>
                   <div className="nm-theme-orb-hole">
                     <div className="nm-theme-orb-core" aria-hidden="true" />
-                    <span className="nm-theme-orb-value">{activeTheme.meterValue}%</span>
-                    <span className="nm-theme-orb-code">{activeTheme.accentHex}</span>
+                    <div className="nm-theme-orb-value-badge">
+                      <span className="nm-theme-orb-value">{activeTheme.meterValue}%</span>
+                    </div>
+                    <button
+                      type="button"
+                      className={`nm-theme-copy-btn ${isCopied ? "is-copied" : ""}`}
+                      onClick={handleCopyHex}
+                      aria-label={isCopied ? "Copied!" : "Copy hex color code"}
+                    >
+                      {isCopied ? <Check size={11} /> : <Copy size={11} />}
+                      <span>{isCopied ? "Copied!" : activeTheme.accentHex}</span>
+                    </button>
                   </div>
                 </div>
               </div>

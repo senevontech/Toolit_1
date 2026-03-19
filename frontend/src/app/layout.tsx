@@ -30,6 +30,13 @@ export const metadata: Metadata = {
     "calculator tools",
   ],
   authors: [{ name: "Toolegend" }],
+  icons: {
+    icon: [
+      { url: "/favicon.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
