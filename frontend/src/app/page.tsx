@@ -523,20 +523,22 @@ export default function Home() {
 
                 return (
                   <label key={slider.key} className="nm-theme-slider">
-                    <span className="nm-theme-slider-ui">
+                    <span
+                      className="nm-theme-slider-ui"
+                      style={
+                        {
+                          "--slider-height": `${valuePercent}%`,
+                          "--slider-color": slider.color,
+                          "--slider-glow": slider.glow,
+                        } as CSSProperties
+                      }
+                    >
                       <input
                         className="nm-theme-slider-input"
                         type="range"
                         min={0}
                         max={255}
                         value={value}
-                        style={
-                          {
-                            "--slider-height": `${valuePercent}%`,
-                            "--slider-color": slider.color,
-                            "--slider-glow": slider.glow,
-                          } as CSSProperties
-                        }
                         onChange={(event) =>
                           handleRgbChange(slider.key, Number(event.target.value))
                         }
