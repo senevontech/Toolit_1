@@ -34,7 +34,7 @@ export default function Footer() {
       <div className="brand-footer__content">
         <div className="brand-footer__hero">
           <div className="brand-footer__wordmark-wrap">
-            <h2 className="brand-footer__wordmark">TOOLIT</h2>
+            <h2 className="brand-footer__wordmark">TOOLEGEND</h2>
           </div>
           <p className="brand-footer__tagline">A product of Senevon INC</p>
         </div>

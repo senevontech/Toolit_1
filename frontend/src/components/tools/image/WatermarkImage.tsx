@@ -27,7 +27,7 @@ export default function WatermarkImage() {
   const [watermarkedFiles, setWatermarkedFiles] =
     useState<File[]>([]);
 
-  const [text, setText] = useState("Toolit");
+  const [text, setText] = useState("Toolegend");
   const [fontSize, setFontSize] = useState(40);
   const [opacity, setOpacity] = useState(0.5);
   const [color, setColor] = useState("#ff0000");

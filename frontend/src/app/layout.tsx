@@ -16,8 +16,8 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: {
-    default: "Toolit - Free Online Tools",
-    template: "%s | Toolit",
+    default: "Toolegend - Free Online Tools",
+    template: "%s | Toolegend",
   },
   description:
     "Free online tools for documents, images, developers and calculators. Fast, secure and easy to use.",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     "qr generator",
     "calculator tools",
   ],
-  authors: [{ name: "Toolit" }],
+  authors: [{ name: "Toolegend" }],
 };
 
 export default function RootLayout({
@@ -40,21 +40,26 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${outfit.variable} scroll-smooth`}>
       <body
-        style={{ background: "#e8e0d8" }}
+        style={{
+          background: "var(--nm-bg, #e8e0d8)",
+          color: "var(--nm-text, #374151)",
+          transition: "background 0.35s ease, color 0.35s ease",
+        }}
         className="flex min-h-screen flex-col text-gray-700 antialiased"
       >
         <header
-          className="sticky top-0 z-50"
+          className="site-header sticky top-0 z-50"
           style={{
-            background: "#e8e0d8",
-            boxShadow: "none",
+            background: "var(--nm-bg, #e8e0d8)",
+            boxShadow: "var(--nm-shadow-out, 0 0 0 transparent)",
+            transition: "background 0.35s ease, box-shadow 0.35s ease",
           }}
         >
           <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3.5">
             <Link href="/" className="group flex items-center">
               <Image
-                src="/logo/logo.png"
-                alt="Toolit"
+                src="/logo/logo-black.png"
+                alt="Toolegend"
                 width={120}
                 height={40}
                 priority
@@ -63,7 +68,7 @@ export default function RootLayout({
                   transition:
                     "transform 0.35s cubic-bezier(0.34,1.56,0.64,1)",
                 }}
-                className="group-hover:scale-105"
+                className="h-auto w-[108px] sm:w-[120px] group-hover:scale-105"
               />
             </Link>
 
@@ -80,7 +85,7 @@ export default function RootLayout({
               </Link>
             </nav>
 
-            <div className="flex items-center gap-2 md:hidden">
+            <div className="hidden items-center gap-2 md:hidden">
               <Link href="/studio" className="btn btn-sm">
                 Tools
               </Link>

@@ -1,0 +1,336 @@
+/* ═══════════════════════════════════════════════════════
+   TOOLEGEND v2 - NEUMORPHIC FIDELITY REFINEMENT
+   Match: User provided screenshot (Violet/Neumorphic)
+   ═══════════════════════════════════════════════════════ */
+
+:root {
+  --vl-bg: #f2f2fa;
+  --vl-surface: #f7f7ff;
+  --vl-shadow-dark: rgba(174, 174, 192, 0.4);
+  --vl-shadow-light: #ffffff;
+  --vl-accent: #8b5cf6; /* Main Violet */
+  --vl-orange: #ff7a00; /* Logo Orange */
+  --vl-text-logo: #1a1a1a;
+  --vl-text-desc: #6b7280;
+}
+
+.vl-page {
+  min-height: 100vh;
+  background: var(--vl-bg);
+  color: #1a1a1a;
+  font-family: 'Inter', system-ui, sans-serif;
+  padding: 2rem 4rem 6rem;
+}
+
+/* ── Nav ─────────────────────────────────────────────── */
+.vl-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.vl-logo-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.vl-logo-text {
+  font-size: 2.25rem;
+  font-weight: 900;
+  color: var(--vl-text-logo);
+  letter-spacing: -0.05em;
+}
+
+.vl-logo-icon {
+  width: 2.3rem;
+  height: 2.3rem;
+  background: var(--vl-orange);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.vl-nav-actions {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.vl-signup-btn {
+  padding: 0.75rem 2rem;
+  border-radius: 12px;
+  background: #f0f0f5;
+  box-shadow: 6px 6px 12px var(--vl-shadow-dark), -6px -6px 12px var(--vl-shadow-light);
+  font-weight: 700;
+  color: #555;
+  border: none;
+}
+
+.vl-home-btn {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: #f0f0f5;
+  box-shadow: 6px 6px 12px var(--vl-shadow-dark), -6px -6px 12px var(--vl-shadow-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8b5cf6;
+  border: none;
+}
+
+/* ── Hero ────────────────────────────────────────────── */
+.vl-hero {
+  text-align: left;
+  margin-bottom: 4.5rem;
+}
+
+.vl-hero-pill {
+  display: inline-flex;
+  padding: 0.6rem 1.4rem;
+  background: #f0f0f5;
+  box-shadow: inset 4px 4px 8px var(--vl-shadow-dark), inset -4px -4px 8px var(--vl-shadow-light);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #8b5cf6;
+  margin-bottom: 2.5rem;
+}
+
+.vl-hero-title {
+  font-size: 5.5rem;
+  font-weight: 900;
+  color: #8b5cf6;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+}
+
+.vl-hero-desc {
+  max-width: 620px;
+  font-size: 1rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 3.5rem;
+  font-weight: 500;
+}
+
+/* ── Combined Search ──────────────────────────────────── */
+.vl-search-section {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 5.5rem;
+}
+
+.vl-search-box {
+  flex: 1;
+  max-width: 380px;
+  padding: 1.35rem 2.2rem;
+  border-radius: 2.5rem;
+  background: #f0f0f5;
+  box-shadow: inset 8px 8px 16px var(--vl-shadow-dark), inset -8px -8px 16px var(--vl-shadow-light);
+  border: none;
+  font-size: 1.15rem;
+  outline: none;
+  font-weight: 500;
+}
+
+.vl-search-box::placeholder {
+    color: #94a3b8;
+}
+
+.vl-search-btn {
+  width: 3.8rem;
+  height: 3.8rem;
+  border-radius: 50%;
+  background: #f0f0f5;
+  box-shadow: 8px 8px 16px var(--vl-shadow-dark), -8px -8px 16px var(--vl-shadow-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a78bfa;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.vl-search-btn:active {
+    box-shadow: inset 4px 4px 8px var(--vl-shadow-dark), inset -4px -4px 8px var(--vl-shadow-light);
+    transform: scale(0.96);
+}
+
+/* ── Category Tabs ───────────────────────────────────── */
+.vl-tabs {
+  display: flex;
+  gap: 1.75rem;
+  margin-bottom: 6rem;
+}
+
+.vl-tab {
+  flex: 1;
+  max-width: 260px;
+  padding: 2.8rem 1.5rem;
+  border-radius: 2.8rem;
+  background: #f0f0f5;
+  box-shadow: 12px 12px 24px var(--vl-shadow-dark), -12px -12px 24px var(--vl-shadow-light);
+  border: none;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-align: center;
+}
+
+.vl-tab:hover {
+    transform: translateY(-5px);
+}
+
+.vl-tab--active {
+  background: var(--vl-accent);
+  color: white;
+  box-shadow: 0 15px 35px rgba(139, 92, 246, 0.45);
+  transform: translateY(-2px);
+}
+
+/* ── Tool Cards ──────────────────────────────────────── */
+.vl-card-container {
+  background: rgba(230, 230, 245, 0.4);
+  border-radius: 3.5rem;
+  padding: 5rem 4rem;
+  box-shadow: inset 12px 12px 24px var(--vl-shadow-dark), inset -12px -12px 24px var(--vl-shadow-light);
+}
+
+.vl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 4rem;
+}
+
+.vl-card {
+  background: #f0f0f5;
+  border-radius: 2.8rem;
+  padding: 1.8rem;
+  box-shadow: 15px 15px 30px rgba(0,0,0,0.08), -15px -15px 30px #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+  border: none;
+  text-align: center;
+  transition: all 0.4s ease;
+}
+
+.vl-card:hover {
+    transform: translateY(-10px);
+}
+
+.vl-card-inner {
+  background: #e9e9f2;
+  border-radius: 2.2rem;
+  padding: 3rem 1.8rem;
+  box-shadow: inset 8px 8px 16px rgba(0,0,0,0.06), inset -8px -8px 16px rgba(255,255,255,0.8);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vl-card-kicker {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #ff7a00;
+    text-transform: lowercase;
+    margin-bottom: 1.5rem;
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.vl-card-kicker::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: currentColor;
+    border-radius: 50%;
+}
+
+.vl-card-icon {
+  font-size: 3rem;
+  margin-bottom: 2rem;
+  display: block;
+  filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
+}
+
+.vl-card-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #4338ca; /* Deep violet-blue */
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.vl-card-desc {
+  font-size: 0.95rem;
+  color: #64748b;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.vl-launch-btn {
+  width: 100%;
+  padding: 1.1rem;
+  border-radius: 1.1rem;
+  background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+  color: white;
+  font-weight: 800;
+  font-size: 1rem;
+  border: none;
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.vl-launch-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(139, 92, 246, 0.5);
+}
+
+.vl-launch-btn:active {
+  transform: translateY(1px);
+}
+
+/* ── Inline Renderer ─────────────────────────────────── */
+.vl-tool-render-zone {
+  margin-bottom: 4rem;
+  background: var(--vl-surface);
+  border-radius: 3rem;
+  padding: 4rem;
+  box-shadow: 20px 20px 40px rgba(0,0,0,0.05);
+  animation: scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes scaleUp {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .vl-page { padding: 2rem; }
+  .vl-hero-title { font-size: 4rem; }
+  .vl-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem; }
+  .vl-tabs { flex-wrap: wrap; justify-content: center; }
+  .vl-tab { max-width: none; flex: initial; width: 45%; }
+}
+
+@media (max-width: 768px) {
+    .vl-hero-title { font-size: 3rem; }
+    .vl-tab { width: 100%; }
+    .vl-logo-text { font-size: 1.8rem; }
+}
