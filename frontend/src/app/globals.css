@@ -2776,22 +2776,41 @@ body {
   }
 
   .brand-footer__wordmark {
-    font-size: clamp(3rem, 22vw, 4.4rem);
+    font-size: clamp(2.4rem, 14vw, 3.4rem);
+  }
+
+  .brand-footer__tagline {
+    font-size: clamp(0.88rem, 3vw, 1.1rem);
   }
 
   .brand-footer__nav-grid {
-    grid-template-columns: 1fr;
-    gap: 1.2rem;
+    grid-template-columns: repeat(2, auto);
+    gap: 1rem 2rem;
   }
 
   .brand-footer__logo-lockup {
-    width: min(100%, 12rem);
+    width: min(100%, 10rem);
     justify-self: center;
     margin-top: 0.75rem;
   }
 
   .brand-footer__bottomline {
     padding-top: 2rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .brand-footer {
+    padding-inline: 0.875rem;
+  }
+
+  .brand-footer__wordmark {
+    font-size: clamp(1.9rem, 13vw, 2.4rem);
+  }
+
+  .brand-footer__nav-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
   }
 }
 

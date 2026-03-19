@@ -8,9 +8,9 @@ export const metadata: Metadata = {
 
 const DEVELOPERS = [
   {
-    name: "Sana Nawaz",
-    email: "sana@toolegend.com",
-    role: "UI/UX Designer",
+    name: "Srijon Karmakar",
+    email: "srijonkarmakar.dev@gmail.com",
+    role: "Full-stack engineer",
     initials: "SN",
   },
   {

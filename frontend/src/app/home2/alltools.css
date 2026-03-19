@@ -469,6 +469,20 @@
   .at-tool-card__icon { width: 42px; height: 42px; }
 }
 
+/* 360px: very small phones */
+@media (max-width: 360px) {
+  .at-top   { padding: 16px 12px 12px; }
+  .at-cats  { padding: 0 12px 6px; }
+  .at-tools { padding: 14px 12px 28px; }
+
+  .at-cats__grid  { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .at-cat-card    { padding: 12px 10px 16px; }
+
+  .at-tool-card   { grid-template-columns: 40px 1fr 16px; padding: 11px 10px; gap: 10px; }
+  .at-tool-card__icon { width: 40px; height: 40px; border-radius: 10px; }
+  .at-tool-card__name { font-size: 0.85rem; }
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .at-cat-card,

@@ -62,7 +62,7 @@ export default function RootLayout({
             transition: "background 0.35s ease, box-shadow 0.35s ease",
           }}
         >
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3.5">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-5 sm:py-3.5">
             <Link href="/" className="group flex items-center">
               <Image
                 src="/logo/logo-black.png"
