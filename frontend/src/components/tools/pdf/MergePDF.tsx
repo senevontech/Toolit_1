@@ -2,225 +2,169 @@
 
 import { useMemo, useState, type ChangeEvent, type DragEvent } from "react";
 import { PDFDocument } from "pdf-lib";
-
+import { Upload, ArrowUp, ArrowDown, X, Download } from "lucide-react";
 import { downloadFile } from "@/lib/downloadUtils";
 
-type MergeError = string | null;
-
-const isPdfFile = (file: File) =>
-  file.type === "application/pdf" ||
-  file.name.toLowerCase().endsWith(".pdf");
+const isPDF = (f: File) =>
+  f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf");
 
 export default function MergePDF() {
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles]           = useState<File[]>([]);
   const [dragActive, setDragActive] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<MergeError>(null);
+  const [loading, setLoading]       = useState(false);
+  const [error, setError]           = useState<string | null>(null);
 
-  const fileCountLabel = useMemo(() => {
-    if (files.length === 0) return "No PDFs selected yet";
-    if (files.length === 1) return "1 PDF ready";
-    return `${files.length} PDFs ready`;
+  const label = useMemo(() => {
+    if (!files.length) return "No PDFs selected yet";
+    return files.length === 1 ? "1 PDF ready" : `${files.length} PDFs ready`;
   }, [files.length]);
 
-  const handleFiles = (incoming: FileList | File[]) => {
-    const pickedFiles = Array.from(incoming).filter(isPdfFile);
-
-    if (pickedFiles.length === 0) {
-      setError("Please choose valid PDF files.");
-      return;
-    }
-
+  const add = (incoming: FileList | File[]) => {
+    const picked = Array.from(incoming).filter(isPDF);
+    if (!picked.length) { setError("Please choose valid PDF files."); return; }
     setError(null);
     setFiles((prev) => {
       const next = [...prev];
-
-      for (const file of pickedFiles) {
-        const exists = next.some(
-          (item) =>
-            item.name === file.name &&
-            item.size === file.size &&
-            item.lastModified === file.lastModified
-        );
-
-        if (!exists) {
-          next.push(file);
-        }
+      for (const f of picked) {
+        if (!next.some((e) => e.name === f.name && e.size === f.size)) next.push(f);
       }
-
       return next;
     });
   };
 
-  const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      handleFiles(e.target.files);
-    }
-
+  const onInput = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) add(e.target.files);
     e.target.value = "";
   };
 
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+  const onDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragActive(false);
-    handleFiles(e.dataTransfer.files);
+    add(e.dataTransfer.files);
   };
 
-  const removeFile = (index: number) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const moveFile = (index: number, direction: number) => {
+  const move = (i: number, dir: number) =>
     setFiles((prev) => {
-      const next = [...prev];
-      const target = index + direction;
-
-      if (target < 0 || target >= next.length) {
-        return prev;
-      }
-
-      [next[index], next[target]] = [next[target], next[index]];
+      const next = [...prev], t = i + dir;
+      if (t < 0 || t >= next.length) return prev;
+      [next[i], next[t]] = [next[t], next[i]];
       return next;
     });
-  };
 
-  const handleMerge = async () => {
-    if (files.length < 2) {
-      setError("Upload at least 2 PDFs to merge.");
-      return;
-    }
+  const remove = (i: number) => setFiles((prev) => prev.filter((_, j) => j !== i));
 
-    setLoading(true);
-    setError(null);
-
+  const merge = async () => {
+    if (files.length < 2) { setError("Upload at least 2 PDFs to merge."); return; }
+    setLoading(true); setError(null);
     try {
-      const mergedPdf = await PDFDocument.create();
-
+      const out = await PDFDocument.create();
       for (const file of files) {
-        const bytes = await file.arrayBuffer();
-        const pdf = await PDFDocument.load(bytes, {
-          ignoreEncryption: true,
-        });
-
-        const pages = await mergedPdf.copyPages(
-          pdf,
-          pdf.getPageIndices()
-        );
-
-        pages.forEach((page) => mergedPdf.addPage(page));
+        const pdf = await PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: true });
+        const pages = await out.copyPages(pdf, pdf.getPageIndices());
+        pages.forEach((p) => out.addPage(p));
       }
-
-      const mergedBytes = await mergedPdf.save();
-      const mergedFile = new File(
-        [new Uint8Array(mergedBytes)],
-        "merged.pdf",
-        { type: "application/pdf" }
-      );
-
-      downloadFile(mergedFile);
-    } catch (mergeError) {
-      console.error("Merge PDF failed:", mergeError);
-      setError(
-        "Could not merge these PDFs. Try standard PDF files without password protection."
-      );
+      downloadFile(new File([new Uint8Array(await out.save())], "merged.pdf", { type: "application/pdf" }));
+    } catch {
+      setError("Could not merge these PDFs. Try standard PDF files without password protection.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
-      <div className="space-y-2">
-        <h2 className="text-2xl font-bold text-orange-500">Merge PDF</h2>
-        <p className="text-sm text-gray-500">
-          Upload multiple PDFs, reorder them, and export one merged file.
-        </p>
-      </div>
+    <div style={{ display: "grid", gap: "1.1rem" }}>
 
+      {/* Drop zone */}
       <div
-        className={`border-2 border-dashed p-6 text-center rounded-lg ${
-          dragActive ? "border-orange-500 bg-orange-50" : ""
-        }`}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragActive(true);
-        }}
+        className="upload-zone"
+        style={dragActive ? {
+          outlineColor: "var(--orange)",
+          boxShadow: "inset 7px 7px 16px rgba(163,177,198,.6),inset -7px -7px 16px rgba(255,255,255,.9),0 0 0 3px rgba(249,115,22,.2)",
+        } : {}}
+        onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
         onDragLeave={() => setDragActive(false)}
-        onDrop={handleDrop}
+        onDrop={onDrop}
       >
-        <p className="text-gray-600 mb-2">Drag and drop PDF files here</p>
-        <p className="text-xs text-gray-400 mb-4">{fileCountLabel}</p>
-
+        <Upload size={30} strokeWidth={1.8} style={{ color: "var(--orange)", opacity: .8 }} />
+        <p style={{ fontWeight: 600, color: "#5c4f47", margin: 0, fontSize: ".95rem" }}>
+          {dragActive ? "Drop PDFs here…" : "Drag & drop PDF files or tap below"}
+        </p>
+        <p style={{ fontSize: ".78rem", color: "#a09080", margin: 0 }}>{label}</p>
         <input
-          type="file"
-          accept=".pdf,application/pdf"
-          multiple
-          onChange={handleInput}
-          className="block mx-auto"
+          type="file" accept=".pdf,application/pdf" multiple onChange={onInput}
+          style={{
+            padding: ".55rem 1rem", borderRadius: ".85rem", border: "none",
+            background: "linear-gradient(145deg,#f3f3f3,#ded8d1)",
+            boxShadow: "5px 5px 10px rgba(148,148,148,.16),-4px -4px 8px rgba(255,255,255,.76)",
+            color: "#5c4f47", fontSize: ".83rem", cursor: "pointer",
+          }}
         />
       </div>
 
+      {/* Error */}
       {error && (
-        <div className="bg-red-100 text-red-700 rounded-xl px-4 py-3 text-sm">
+        <div style={{
+          padding: ".75rem 1rem", borderRadius: ".9rem",
+          background: "linear-gradient(145deg,#ffe1d6,#efc1b0)",
+          boxShadow: "5px 5px 10px rgba(181,102,73,.16),-4px -4px 8px rgba(255,241,235,.72)",
+          color: "#9b3412", fontSize: ".87rem", fontWeight: 600,
+        }}>
           {error}
         </div>
       )}
 
+      {/* File list */}
       {files.length > 0 && (
-        <div className="space-y-2">
-          {files.map((file, index) => (
+        <div style={{ display: "grid", gap: ".6rem" }}>
+          {files.map((file, i) => (
             <div
-              key={`${file.name}-${file.lastModified}-${index}`}
-              className="flex items-center justify-between border p-3 rounded"
+              key={`${file.name}-${file.lastModified}-${i}`}
+              className="neu-inset-panel"
+              style={{ padding: ".75rem 1rem", display: "flex", alignItems: "center", gap: ".75rem" }}
             >
-              <div>
-                <p className="font-medium">{file.name}</p>
-                <p className="text-xs text-gray-500">
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ margin: 0, fontWeight: 700, fontSize: ".87rem", color: "#4e433d", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {file.name}
+                </p>
+                <p style={{ margin: ".1rem 0 0", fontSize: ".72rem", color: "#a09080" }}>
                   {(file.size / 1024).toFixed(1)} KB
                 </p>
               </div>
-
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => moveFile(index, -1)}
-                  aria-label={`Move ${file.name} up`}
-                  className="px-2 bg-gray-200 rounded"
-                >
-                  ↑
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => moveFile(index, 1)}
-                  aria-label={`Move ${file.name} down`}
-                  className="px-2 bg-gray-200 rounded"
-                >
-                  ↓
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => removeFile(index)}
-                  aria-label={`Remove ${file.name}`}
-                  className="px-2 bg-red-500 text-white rounded"
-                >
-                  ×
-                </button>
+              <div style={{ display: "flex", gap: ".4rem", flexShrink: 0 }}>
+                {[
+                  { icon: <ArrowUp size={13} />, fn: () => move(i, -1), label: "Move up",   danger: false },
+                  { icon: <ArrowDown size={13} />, fn: () => move(i, 1),  label: "Move down", danger: false },
+                  { icon: <X size={13} />,          fn: () => remove(i),  label: "Remove",    danger: true  },
+                ].map(({ icon, fn, label: lbl, danger }) => (
+                  <button
+                    key={lbl}
+                    type="button"
+                    aria-label={lbl}
+                    onClick={fn}
+                    style={{
+                      width: "2rem", height: "2rem", border: "none", borderRadius: ".6rem",
+                      cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                      background: danger
+                        ? "linear-gradient(145deg,#ffe1d6,#efc1b0)"
+                        : "linear-gradient(145deg,#f3f3f3,#ded8d1)",
+                      color: danger ? "#9b3412" : "#7a6a60",
+                      boxShadow: "4px 4px 8px rgba(148,148,148,.14),-3px -3px 6px rgba(255,255,255,.78)",
+                    }}
+                  >
+                    {icon}
+                  </button>
+                ))}
               </div>
             </div>
           ))}
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={handleMerge}
-        disabled={loading}
-        className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded disabled:opacity-60"
-      >
-        {loading ? "Merging..." : "Merge PDFs"}
+      <button className="btn" type="button" onClick={merge} disabled={loading}>
+        <Download size={15} />
+        {loading ? "Merging…" : "Merge PDFs"}
       </button>
+
     </div>
   );
 }

@@ -443,7 +443,7 @@ export default function Home() {
             </div>
 
             <div className="nm-hero-actions">
-              <Link href="#nm-tools" className="nm-launch-btn">
+              <Link href="/tools" className="nm-launch-btn">
                 launch all tools
               </Link>
               <button

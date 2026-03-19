@@ -3,9 +3,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Outfit } from "next/font/google";
-import { Zap } from "lucide-react";
+import { Zap, Home } from "lucide-react";
 
 import Footer from "@/components/layout/Footer";
+import LoadingCurtain from "@/components/layout/LoadingCurtain";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -92,14 +93,18 @@ export default function RootLayout({
               </Link>
             </nav>
 
-            <div className="hidden items-center gap-2 md:hidden">
-              <Link href="/studio" className="btn btn-sm">
-                Tools
-              </Link>
-            </div>
+            {/* Mobile-only home button */}
+            <Link
+              href="/"
+              aria-label="Go to Home"
+              className="mobile-home-btn md:hidden"
+            >
+              <Home size={16} strokeWidth={2.2} />
+            </Link>
           </div>
         </header>
 
+        <LoadingCurtain />
         <main className="flex-1 w-full">{children}</main>
         <Footer />
       </body>
