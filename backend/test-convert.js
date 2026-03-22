@@ -1,0 +1,1 @@
+const { execSync } = require("child_process"); try { execSync(`"C:/Program Files/LibreOffice/program/soffice.exe" --headless --infilter="writer_pdf_import" --convert-to docx dummy.pdf`); console.log("Success!"); } catch(e) { console.error("Error:", e.message); }

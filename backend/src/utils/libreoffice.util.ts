@@ -2,17 +2,26 @@ import * as fs from 'fs';
 import * as libre from 'libreoffice-convert';
 import { dirname } from 'path';
 
-const DEFAULT_SOFFICE_BINARY_PATH =
-  'C:\\Program Files\\LibreOffice\\program\\soffice.exe';
+const DEFAULT_PATHS = [
+  'C:\\Program Files\\LibreOffice\\program\\soffice.exe',
+  'C:\\LibreOffice\\program\\soffice.exe'
+];
 
 function getSofficeBinaryPaths(): string[] {
-  const configuredPath =
-    process.env.LIBREOFFICE_PATH ?? DEFAULT_SOFFICE_BINARY_PATH;
-  const normalizedPath = configuredPath.replace(/\//g, '\\');
-  const candidatePaths = [normalizedPath];
+  let candidatePaths: string[] = [];
 
-  if (/soffice\.exe$/i.test(normalizedPath)) {
-    candidatePaths.unshift(normalizedPath.replace(/soffice\.exe$/i, 'soffice.com'));
+  if (process.env.LIBREOFFICE_PATH) {
+    const normalizedPath = process.env.LIBREOFFICE_PATH.replace(/\//g, '\\');
+    candidatePaths.push(normalizedPath);
+    if (/soffice\.exe$/i.test(normalizedPath)) {
+      candidatePaths.push(normalizedPath.replace(/soffice\.exe$/i, 'soffice.com'));
+    }
+  } else {
+    // Check traditional Program Files, then root C:\
+    for (const p of DEFAULT_PATHS) {
+      candidatePaths.push(p);
+      candidatePaths.push(p.replace(/soffice\.exe$/i, 'soffice.com'));
+    }
   }
 
   return Array.from(

@@ -6,23 +6,18 @@ import {
 import * as fs from 'fs';
 import { basename, extname } from 'path';
 import { convertFile } from '../utils/libreoffice.util';
+import { convertPdfWithPython } from '../utils/python-converter.util';
 
 @Injectable()
 export class ConverterService {
   async pdfToWord(filePath: string): Promise<Buffer> {
     this.ensureExtension(filePath, ['.pdf'], 'Please upload a PDF file.');
-    this.rejectUnsupported(
-      filePath,
-      'PDF to Word is not supported by the current LibreOffice-based backend.',
-    );
+    return convertPdfWithPython('docx', filePath);
   }
 
   async pdfToExcel(filePath: string): Promise<Buffer> {
     this.ensureExtension(filePath, ['.pdf'], 'Please upload a PDF file.');
-    this.rejectUnsupported(
-      filePath,
-      'PDF to Excel is not supported by the current LibreOffice-based backend.',
-    );
+    return convertPdfWithPython('xlsx', filePath);
   }
 
   async excelToPdf(filePath: string): Promise<Buffer> {
@@ -36,10 +31,7 @@ export class ConverterService {
 
   async pdfToPpt(filePath: string): Promise<Buffer> {
     this.ensureExtension(filePath, ['.pdf'], 'Please upload a PDF file.');
-    this.rejectUnsupported(
-      filePath,
-      'PDF to PowerPoint is not supported by the current LibreOffice-based backend.',
-    );
+    return convertPdfWithPython('pptx', filePath);
   }
 
   async pptToPdf(filePath: string): Promise<Buffer> {
