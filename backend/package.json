@@ -5,7 +5,7 @@
   "scripts": {
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "build": "nest build",
+    "build": "pip3 install -r requirements.txt && nest build",
     "start:prod": "node dist/main.js"
   },
   "dependencies": {
