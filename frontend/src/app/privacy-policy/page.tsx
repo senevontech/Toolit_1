@@ -1,8 +1,10 @@
+import { buildMetadata } from "@/lib/seo";
+
 const policySections = [
   {
     title: "What we process",
     body:
-      "Toolegend focuses on in-browser utilities and temporary file handling. Files you upload are used only to complete the tool action you request.",
+      "Toolmitra focuses on in-browser utilities and temporary file handling. Files you upload are used only to complete the tool action you request.",
   },
   {
     title: "How long data stays",
@@ -12,9 +14,17 @@ const policySections = [
   {
     title: "Contact",
     body:
-      "For privacy requests or policy questions, contact hello@toolegend.com and partner@toolegend.com.",
+      "For privacy requests or policy questions, contact hello@toolmitra.com and partner@toolmitra.com.",
   },
 ];
+
+export const metadata = buildMetadata({
+  title: "Privacy Policy",
+  description:
+    "Read the privacy policy for Toolmitra and understand how uploaded files and generated outputs are handled.",
+  path: "/privacy-policy/",
+  keywords: ["privacy policy", "file handling policy", "toolmitra privacy"],
+});
 
 export default function PrivacyPolicyPage() {
   return (
@@ -27,7 +37,7 @@ export default function PrivacyPolicyPage() {
           Privacy Policy
         </h1>
         <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600">
-          This page provides a basic privacy summary for Toolegend. Update it
+          This page provides a basic privacy summary for Toolmitra. Update it
           with production retention, analytics, and compliance details before
           treating it as a final legal document.
         </p>

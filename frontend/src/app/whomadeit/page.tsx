@@ -41,7 +41,7 @@ export default function WhoMadeItPage() {
         <p className="wmi-eyebrow">Behind the scenes</p>
         <h1 className="wmi-title">Who Made It</h1>
         <p className="wmi-subtitle">
-          The team that built Toolegend from the ground up.
+          The team that built Toolmitra from the ground up.
         </p>
       </header>
 
@@ -72,7 +72,7 @@ export default function WhoMadeItPage() {
       {/* ── FOOTER NOTE ── */}
       <footer className="wmi-footer-note">
         <p className="wmi-footer-text">
-          Built with care &mdash; Toolegend &copy; {new Date().getFullYear()}
+          Built with care &mdash; Toolmitra &copy; {new Date().getFullYear()}
         </p>
       </footer>
     </div>

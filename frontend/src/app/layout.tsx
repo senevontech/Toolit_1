@@ -7,6 +7,13 @@ import { Zap, Home } from "lucide-react";
 
 import Footer from "@/components/layout/Footer";
 import LoadingCurtain from "@/components/layout/LoadingCurtain";
+import {
+  defaultDescription,
+  defaultKeywords,
+  siteMetadataBase,
+  siteName,
+  siteUrl,
+} from "@/lib/seo";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -16,25 +23,42 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
+  metadataBase: siteMetadataBase,
+  applicationName: siteName,
   title: {
-    default: "Toolegend - Free Online Tools",
-    template: "%s | Toolegend",
+    default: `${siteName} - Free Online Tools`,
+    template: `%s | ${siteName}`,
   },
-  description:
-    "Free online tools for documents, images, developers and calculators. Fast, secure and easy to use.",
-  keywords: [
-    "image compressor",
-    "pdf tools",
-    "online tools",
-    "json formatter",
-    "qr generator",
-    "calculator tools",
-  ],
-  authors: [{ name: "Toolegend" }],
-  icons: {
-    icon: [
-      { url: "/favicon.png", type: "image/png" },
+  description: defaultDescription,
+  keywords: defaultKeywords,
+  authors: [{ name: siteName, url: siteUrl }],
+  creator: siteName,
+  publisher: siteName,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName,
+    url: "/",
+    title: `${siteName} - Free Online Tools`,
+    description: defaultDescription,
+    images: [
+      {
+        url: "/logo/logo-black.png",
+        alt: `${siteName} logo`,
+      },
     ],
+  },
+  twitter: {
+    card: "summary",
+    title: `${siteName} - Free Online Tools`,
+    description: defaultDescription,
+    images: ["/logo/logo-black.png"],
+  },
+  icons: {
+    icon: [{ url: "/favicon.png", type: "image/png" }],
     shortcut: "/favicon.png",
     apple: "/favicon.png",
   },
@@ -67,7 +91,7 @@ export default function RootLayout({
             <Link href="/" className="group flex items-center">
               <Image
                 src="/logo/logo-black.png"
-                alt="Toolegend"
+                alt="Toolmitra"
                 width={120}
                 height={40}
                 priority

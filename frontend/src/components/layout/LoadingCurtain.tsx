@@ -28,7 +28,7 @@ export default function LoadingCurtain() {
       <div className="curtain__logo">
         <Image
           src="/logo/logo-black.png"
-          alt="Toolegend"
+          alt="Toolmitra"
           width={160}
           height={52}
           priority

@@ -1,6 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
+function normalizeOrigin(origin: string) {
+  return origin.trim().replace(/\/+$/, '');
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -11,12 +15,12 @@ async function bootstrap() {
     'http://localhost:3000'
   )
     .split(',')
-    .map((origin) => origin.trim())
+    .map(normalizeOrigin)
     .filter(Boolean);
 
   app.enableCors({
     origin: (origin, callback) => {
-      if (!origin || corsOrigins.includes(origin)) {
+      if (!origin || corsOrigins.includes(normalizeOrigin(origin))) {
         callback(null, true);
         return;
       }
@@ -32,6 +36,7 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0');
 
   console.log(`Backend running on http://0.0.0.0:${port}`);
+  console.log(`Allowed CORS origins: ${corsOrigins.join(', ')}`);
 }
 
 bootstrap();
