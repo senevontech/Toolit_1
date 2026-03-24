@@ -43,7 +43,7 @@ export default function AllToolsV2() {
     <div className="vl-page">
       <nav className="vl-nav">
         <div className="vl-logo-group">
-          <span className="vl-logo-text">TOOLLAKE</span>
+          <span className="vl-logo-text">TOOLMITRA</span>
           <div className="vl-logo-icon shadow-lg">
             <ArrowRight size={22} strokeWidth={4} />
           </div>
@@ -59,7 +59,7 @@ export default function AllToolsV2() {
       <div className="mx-auto max-w-[1400px]">
         <header className="vl-hero">
           <div className="vl-hero-pill">Powerful tools for everyday work</div>
-          <h1 className="vl-hero-title">TOOLLAKE</h1>
+          <h1 className="vl-hero-title">TOOLMITRA</h1>
           <p className="vl-hero-desc">
             Compress images, convert PDFs, transform documents, and optimize
             files in one fast, secure, and easy-to-use platform.

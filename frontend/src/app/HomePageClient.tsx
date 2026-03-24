@@ -65,7 +65,7 @@ const FEATURED_SECONDARY_SLUGS = [
   "word-to-pdf",
 ];
 
-const HERO_TITLE = "TOOLLAKE";
+const HERO_TITLE = "TOOLMITRA";
 
 type RGBChannel = "red" | "green" | "blue";
 
@@ -731,7 +731,7 @@ export default function Home() {
         <div className="nm-about-inner">
           <div className="nm-about-head">
             <span className="nm-about-eyebrow">About</span>
-            <h2 className="nm-about-title">TOOLLAKE</h2>
+            <h2 className="nm-about-title">TOOLMITRA</h2>
           </div>
           <div className="nm-about-badge">Simple Tools. Powerful Results.</div>
           <div className="nm-about-body">
@@ -791,4 +791,3 @@ export default function Home() {
     </div>
   );
 }
-
