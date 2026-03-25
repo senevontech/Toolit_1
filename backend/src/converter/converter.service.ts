@@ -10,6 +10,7 @@ import { convertPdfWithPython } from '../utils/python-converter.util';
 
 @Injectable()
 export class ConverterService {
+
   async pdfToWord(filePath: string): Promise<Buffer> {
     this.ensureExtension(filePath, ['.pdf'], 'Please upload a PDF file.');
     return convertPdfWithPython('docx', filePath);
@@ -61,9 +62,44 @@ export class ConverterService {
     return this.convert(filePath, 'html');
   }
 
+  // 🔐 PROTECT PDF
+  async pdfProtect(filePath: string, password: string): Promise<Buffer> {
+    this.ensureExtension(filePath, ['.pdf'], 'Please upload a PDF file.');
+
+    if (!password) {
+      this.rejectUnsupported(filePath, 'Password is required');
+    }
+
+    try {
+      return await convertPdfWithPython('protect', filePath, password);
+    } catch (error) {
+      console.error('PDF protect failed:', error);
+      throw new InternalServerErrorException('PDF protection failed');
+    } finally {
+      this.removeUploadedFile(filePath);
+    }
+  }
+
+  // 🔓 UNLOCK PDF (🔥 THIS WAS MISSING)
+  async pdfUnlock(filePath: string, password: string): Promise<Buffer> {
+    this.ensureExtension(filePath, ['.pdf'], 'Please upload a PDF file.');
+
+    if (!password) {
+      this.rejectUnsupported(filePath, 'Password is required');
+    }
+
+    try {
+      return await convertPdfWithPython('unlock', filePath, password);
+    } catch (error) {
+      console.error('PDF unlock failed:', error);
+      throw new InternalServerErrorException('PDF unlock failed');
+    } finally {
+      this.removeUploadedFile(filePath);
+    }
+  }
+
   private async convert(filePath: string, format: string): Promise<Buffer> {
     try {
-
       if (!fs.existsSync(filePath)) {
         throw new Error('Uploaded file not found');
       }

@@ -4,7 +4,8 @@ import {
   UploadedFile,
   UseInterceptors,
   Res,
-  BadRequestException
+  BadRequestException,
+  Body,
 } from '@nestjs/common';
 
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -14,7 +15,6 @@ import { Response } from 'express';
 
 @Controller('converter')
 export class ConverterController {
-
   constructor(private readonly converterService: ConverterService) {}
 
   @Post('pdf-word')
@@ -23,10 +23,7 @@ export class ConverterController {
     @UploadedFile() file: Express.Multer.File,
     @Res() res: Response,
   ) {
-
-    if (!file) {
-      throw new BadRequestException('File not uploaded');
-    }
+    if (!file) throw new BadRequestException('File not uploaded');
 
     const result = await this.converterService.pdfToWord(file.path);
 
@@ -45,10 +42,7 @@ export class ConverterController {
     @UploadedFile() file: Express.Multer.File,
     @Res() res: Response,
   ) {
-
-    if (!file) {
-      throw new BadRequestException('File not uploaded');
-    }
+    if (!file) throw new BadRequestException('File not uploaded');
 
     const result = await this.converterService.pdfToExcel(file.path);
 
@@ -67,10 +61,7 @@ export class ConverterController {
     @UploadedFile() file: Express.Multer.File,
     @Res() res: Response,
   ) {
-
-    if (!file) {
-      throw new BadRequestException('File not uploaded');
-    }
+    if (!file) throw new BadRequestException('File not uploaded');
 
     const result = await this.converterService.excelToPdf(file.path);
 
@@ -88,10 +79,7 @@ export class ConverterController {
     @UploadedFile() file: Express.Multer.File,
     @Res() res: Response,
   ) {
-
-    if (!file) {
-      throw new BadRequestException('File not uploaded');
-    }
+    if (!file) throw new BadRequestException('File not uploaded');
 
     const result = await this.converterService.pdfToPpt(file.path);
 
@@ -110,10 +98,7 @@ export class ConverterController {
     @UploadedFile() file: Express.Multer.File,
     @Res() res: Response,
   ) {
-
-    if (!file) {
-      throw new BadRequestException('File not uploaded');
-    }
+    if (!file) throw new BadRequestException('File not uploaded');
 
     const result = await this.converterService.pptToPdf(file.path);
 
@@ -131,9 +116,7 @@ export class ConverterController {
     @UploadedFile() file: Express.Multer.File,
     @Res() res: Response,
   ) {
-    if (!file) {
-      throw new BadRequestException('File not uploaded');
-    }
+    if (!file) throw new BadRequestException('File not uploaded');
 
     const result = await this.converterService.wordToPdf(file.path);
 
@@ -151,9 +134,7 @@ export class ConverterController {
     @UploadedFile() file: Express.Multer.File,
     @Res() res: Response,
   ) {
-    if (!file) {
-      throw new BadRequestException('File not uploaded');
-    }
+    if (!file) throw new BadRequestException('File not uploaded');
 
     const result = await this.converterService.wordToHtml(file.path);
 
@@ -165,4 +146,51 @@ export class ConverterController {
     res.send(result);
   }
 
+  // 🔐 PROTECT PDF
+  @Post('pdf-protect')
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  async pdfProtect(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('password') password: string,
+    @Res() res: Response,
+  ) {
+    if (!file) throw new BadRequestException('File not uploaded');
+    if (!password) throw new BadRequestException('Password is required');
+
+    const result = await this.converterService.pdfProtect(
+      file.path,
+      password,
+    );
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=protected.pdf',
+    });
+
+    res.send(result);
+  }
+
+  // 🔓 UNLOCK PDF (FINAL ADD)
+  @Post('pdf-unlock')
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  async pdfUnlock(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('password') password: string,
+    @Res() res: Response,
+  ) {
+    if (!file) throw new BadRequestException('File not uploaded');
+    if (!password) throw new BadRequestException('Password is required');
+
+    const result = await this.converterService.pdfUnlock(
+      file.path,
+      password,
+    );
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=unlocked.pdf',
+    });
+
+    res.send(result);
+  }
 }

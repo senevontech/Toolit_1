@@ -431,6 +431,7 @@ export default function Home() {
             <div className="nm-search-row">
               <div className="nm-search-wrap">
                 <input
+                  suppressHydrationWarning
                   className="nm-search-input"
                   placeholder="Search any tool"
                   value={search}

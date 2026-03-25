@@ -97,6 +97,7 @@ export default function RootLayout({
                 priority
                 style={{
                   objectFit: "contain",
+                  height: "auto",
                   transition:
                     "transform 0.35s cubic-bezier(0.34,1.56,0.64,1)",
                 }}

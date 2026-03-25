@@ -5,12 +5,46 @@ import { useState } from "react";
 export default function UnlockPDF() {
   const [file, setFile] = useState<File | null>(null);
   const [password, setPassword] = useState("");
-  const unsupportedMessage =
-    "PDF password removal is not implemented in this project yet. It needs a dedicated backend PDF utility.";
+  const [loading, setLoading] = useState(false);
 
   const handleUnlock = async () => {
-    if (!file || !password) return;
-    alert(unsupportedMessage);
+    if (!file || !password) {
+      alert("Please select file and enter password");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("password", password);
+
+      const res = await fetch("http://localhost:5000/converter/pdf-unlock", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Unlock failed");
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "unlocked.pdf";
+      a.click();
+
+      window.URL.revokeObjectURL(url);
+
+    } catch (err) {
+      console.error(err);
+      alert("Failed to unlock PDF (wrong password or corrupted file)");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -38,14 +72,11 @@ export default function UnlockPDF() {
 
       <button
         onClick={handleUnlock}
+        disabled={loading}
         className="bg-green-500 text-white px-6 py-2 rounded"
       >
-        Unlock PDF
+        {loading ? "Processing..." : "Unlock PDF"}
       </button>
-
-      <p className="mt-4 max-w-md text-sm text-amber-700">
-        {unsupportedMessage}
-      </p>
     </div>
   );
 }
