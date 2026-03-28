@@ -8,7 +8,7 @@ const DEFAULT_PATHS = [
 ];
 
 function getSofficeBinaryPaths(): string[] {
-  let candidatePaths: string[] = [];
+  const candidatePaths: string[] = [];
 
   if (process.env.LIBREOFFICE_PATH) {
     const normalizedPath = process.env.LIBREOFFICE_PATH.replace(/\//g, '\\');

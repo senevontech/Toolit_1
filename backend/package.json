@@ -6,7 +6,14 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "build": "pip3 install -r requirements.txt && nest build",
-    "start:prod": "node dist/main.js"
+    "build:app": "nest build",
+    "start:prod": "node dist/main.js",
+    "worker": "node dist/worker.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint \"src/**/*.ts\"",
+    "test": "node scripts/smoke-test.cjs",
+    "validate:env": "node scripts/validate-env.cjs",
+    "verify": "npm run validate:env && npm run typecheck && npm run lint && npm run build:app && npm run test"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.16",
@@ -14,9 +21,11 @@
     "@nestjs/core": "^11.1.16",
     "@nestjs/mongoose": "^11.0.4",
     "@nestjs/platform-express": "^11.1.16",
+    "bullmq": "^5.71.1",
     "cors": "^2.8.6",
     "dotenv": "^16.3.1",
     "file-type": "^21.3.1",
+    "ioredis": "^5.10.1",
     "libreoffice-convert": "^1.8.1",
     "mongoose": "^9.3.0",
     "multer": "^1.4.5-lts.1",
@@ -30,7 +39,11 @@
     "@nestjs/testing": "^11.1.16",
     "@types/multer": "^2.1.0",
     "@types/node": "^20.11.30",
+    "@typescript-eslint/eslint-plugin": "^8.46.1",
+    "@typescript-eslint/parser": "^8.46.1",
+    "eslint": "^8.57.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.5",
     "typescript": "^5.4.5"
   }
 }

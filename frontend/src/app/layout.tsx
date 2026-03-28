@@ -2,7 +2,6 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Outfit } from "next/font/google";
 import { Zap, Home } from "lucide-react";
 
 import Footer from "@/components/layout/Footer";
@@ -14,13 +13,6 @@ import {
   siteName,
   siteUrl,
 } from "@/lib/seo";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-  display: "swap",
-  variable: "--font-geometric",
-});
 
 export const metadata: Metadata = {
   metadataBase: siteMetadataBase,
@@ -70,7 +62,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${outfit.variable} scroll-smooth`}>
+    <html lang="en" className="scroll-smooth">
       <body
         style={{
           background: "var(--nm-bg, #e8e0d8)",

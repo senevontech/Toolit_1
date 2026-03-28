@@ -57,12 +57,19 @@ const TOOL_ICON: Record<string, LucideIcon> = {
   "base64-tool": Code2,
 };
 
-const FEATURED_PRIMARY_SLUGS = ["image-compressor", "merge-pdf"];
-const FEATURED_SECONDARY_SLUGS = [
+const FEATURED_PRIMARY_SLUGS = [
+  "image-compressor",
+  "merge-pdf",
   "pdf-to-word",
-  "qr-generator",
   "image-resizer",
+  "pdf-to-excel",
+];
+const FEATURED_SECONDARY_SLUGS = [
   "word-to-pdf",
+  "split-pdf",
+  "png-jpg-converter",
+  "qr-generator",
+  "json-formatter",
 ];
 
 const HERO_TITLE = "TOOLMITRA";
@@ -97,7 +104,7 @@ const DARK_TEXT_RGB: RGBColor = { red: 34, green: 31, blue: 40 };
 const BASE_TEXT_RGB: RGBColor = { red: 66, green: 58, blue: 72 };
 const BASE_SHADOW_RGB: RGBColor = { red: 144, green: 149, blue: 160 };
 const BASE_SHADOW_STRONG_RGB: RGBColor = { red: 112, green: 118, blue: 132 };
-const INITIAL_RGB: RGBColor = { red: 139, green: 99, blue: 221 };
+const INITIAL_RGB: RGBColor = { red: 255, green: 178, blue: 134 };
 
 const clampChannel = (value: number) => Math.max(0, Math.min(255, Math.round(value)));
 

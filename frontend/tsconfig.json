@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "strict": true,
     "noEmit": true,
     "module": "esnext",
@@ -13,14 +17,16 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"]
+      "@/*": [
+        "*"
+      ]
     },
-
     "plugins": [
-      { "name": "next" }
+      {
+        "name": "next"
+      }
     ]
   },
   "include": [
@@ -28,7 +34,10 @@
     "src/types/css.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".next-dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

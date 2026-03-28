@@ -2,10 +2,15 @@
   "name": "tools-frontend",
   "private": true,
   "scripts": {
-    "dev": "node scripts/clean-next.mjs && next dev",
-    "build": "node scripts/clean-next.mjs && next build && node scripts/copy-export-to-dist.mjs",
-    "clean": "node scripts/clean-next.mjs",
-    "start": "next start"
+    "dev": "node scripts/clean-next.mjs dev && next dev",
+    "build": "node scripts/clean-next.mjs build && next build && node scripts/copy-export-to-dist.mjs",
+    "clean": "node scripts/clean-next.mjs all",
+    "start": "next start",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "next lint",
+    "test": "node scripts/smoke-test.cjs",
+    "validate:env": "node scripts/validate-env.mjs",
+    "verify": "npm run validate:env && npm run typecheck && npm run lint && npm run build && npm run test"
   },
   "dependencies": {
     "axios": "^1.6.0",
@@ -26,8 +31,11 @@
     "@types/qrcode": "^1.5.6",
     "@types/react": "19.2.14",
     "autoprefixer": "^10.4.27",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.0.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
+    "tsx": "^4.20.5",
     "typescript": "^5.0.0"
   }
 }

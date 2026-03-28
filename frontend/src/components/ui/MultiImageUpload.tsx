@@ -48,7 +48,7 @@ export default function MultiImageUpload({
     });
 
     onFilesChange(files);
-  }, [files]);
+  }, [files, onFilesChange]);
 
   const removeFile = (name: string) => {
     const updated = files.filter(
@@ -97,6 +97,7 @@ export default function MultiImageUpload({
             {/* Preview */}
             <img
               src={file.preview}
+              alt={file.name}
               className="h-32 object-contain mx-auto rounded"
             />
 

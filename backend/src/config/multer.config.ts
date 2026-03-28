@@ -1,23 +1,22 @@
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import * as fs from 'fs';
+import * as path from 'path';
+import { randomUUID } from 'crypto';
 
-const uploadPath = './uploads';
+const uploadPath = path.resolve(process.cwd(), 'uploads');
 
 // create uploads folder if not exists
 if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath);
+  fs.mkdirSync(uploadPath, { recursive: true });
 }
 
 export const multerConfig = {
   storage: diskStorage({
     destination: uploadPath,
     filename: (req, file, cb) => {
-
-      const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      const ext = extname(file.originalname);
-
-      cb(null, `${unique}${ext}`);
+      const ext = extname(file.originalname).toLowerCase();
+      cb(null, `${randomUUID()}${ext}`);
     },
   }),
 
@@ -35,7 +34,6 @@ export const multerConfig = {
       '.ppt',
       '.pptx',
       '.pdf',
-      '.txt',
     ];
 
     const ext = extname(file.originalname).toLowerCase();

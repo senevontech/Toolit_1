@@ -1,5 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { NextFunction, Request, Response } from 'express';
+import { HttpExceptionFilter } from './common/http-exception.filter';
+import { logStructured } from './common/structured-logger';
 
 function normalizeOrigin(origin: string) {
   return origin.trim().replace(/\/+$/, '');
@@ -7,6 +10,18 @@ function normalizeOrigin(origin: string) {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const expressApp = app.getHttpAdapter().getInstance();
+
+  expressApp.disable('x-powered-by');
+  app.useGlobalFilters(new HttpExceptionFilter());
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Cross-Origin-Resource-Policy', 'same-site');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    next();
+  });
 
   const corsOrigins = (
     process.env.ALLOWED_ORIGINS ??
@@ -35,8 +50,11 @@ async function bootstrap() {
 
   await app.listen(port, '0.0.0.0');
 
-  console.log(`Backend running on http://0.0.0.0:${port}`);
-  console.log(`Allowed CORS origins: ${corsOrigins.join(', ')}`);
+  logStructured('info', 'server_started', {
+    port,
+    bind: '0.0.0.0',
+    allowedCorsOrigins: corsOrigins,
+  });
 }
 
 bootstrap();

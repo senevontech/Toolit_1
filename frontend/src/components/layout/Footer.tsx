@@ -21,14 +21,14 @@ export default function Footer() {
   return (
     <footer className="brand-footer">
       <div className="brand-footer__topline">
-        <a
+        {/* <a
           href="https://senevon.in"
           target="_blank"
           rel="noreferrer"
           className="brand-footer__site-link"
         >
           senevon.in
-        </a>
+        </a> */}
       </div>
 
       <div className="brand-footer__content">
@@ -36,7 +36,7 @@ export default function Footer() {
           <div className="brand-footer__wordmark-wrap">
             <h2 className="brand-footer__wordmark">TOOLMITRA</h2>
           </div>
-          <p className="brand-footer__tagline">A product of Senevon INC</p>
+          {/* <p className="brand-footer__tagline">A product of Senevon INC</p> */}
         </div>
 
         <div className="brand-footer__nav-shell">
@@ -73,7 +73,7 @@ export default function Footer() {
 
           <div className="brand-footer__logo-lockup" aria-hidden>
             <Image
-              src="/logo/snv-logo.png"
+              src="/logo/logo-black.png"
               alt=""
               width={3264}
               height={3264}
@@ -84,8 +84,11 @@ export default function Footer() {
       </div>
 
       <div className="brand-footer__bottomline">
-        All rights reserved @senevon inc {year}
+        All rights reserved @Toolmitra {year}
       </div>
     </footer>
   );
 }
+
+
+

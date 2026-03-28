@@ -10,6 +10,7 @@
 
 /* ── CSS tokens ────────────────────────────────────────── */
 :root {
+  --font-geometric: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --neu-bg:           #e2e8f0;
   --neu-surface:      #edf1f7;
   --neu-dark:         #d0d8e4;

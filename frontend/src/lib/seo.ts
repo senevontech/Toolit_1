@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 
 import type { ToolMeta } from "@/lib/tools";
+import { getPublicSiteUrl } from "@/lib/env";
 
 const DEFAULT_SITE_URL = "https://toolmitra.com";
 
 export const siteName = "Toolmitra";
-export const siteUrl = normalizeSiteUrl(
-  process.env.NEXT_PUBLIC_SITE_URL?.trim() || DEFAULT_SITE_URL
-);
+export const siteUrl = normalizeSiteUrl(getPublicSiteUrl(DEFAULT_SITE_URL));
 export const siteMetadataBase = new URL(siteUrl);
 export const defaultDescription =
   "Free online tools for PDFs, images, developers, and calculators. Compress, convert, format, and calculate in your browser with Toolmitra.";
