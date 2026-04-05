@@ -1,7 +1,8 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useDeferredValue, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -10,10 +11,16 @@ import {
   FileText,
   Image as ImageIcon,
   Search,
+  Video,
   type LucideIcon,
 } from "lucide-react";
 
 import { categories, tools } from "@/lib/tools";
+import type { ToolCategory } from "@/types/tool.types";
+
+function isToolCategory(value: string): value is ToolCategory {
+  return (categories as string[]).includes(value);
+}
 
 const CATEGORY_META: Record<
   string,
@@ -45,6 +52,15 @@ const CATEGORY_META: Record<
     icon: FileText,
     eyebrow: "Document",
   },
+  "Video Tools": {
+    title: "Video",
+    description: "Convert, cut and optimize videos",
+    accent: "#f97316",
+    soft: "rgba(249, 115, 22, 0.16)",
+    glow: "rgba(249, 115, 22, 0.34)",
+    icon: Video,
+    eyebrow: "Video",
+  },
   "Developer Tools": {
     title: "Developer",
     description: "JSON, QR codes & Base64 utilities",
@@ -53,6 +69,15 @@ const CATEGORY_META: Record<
     glow: "rgba(61, 179, 107, 0.34)",
     icon: Code2,
     eyebrow: "Developer",
+  },
+  "SEO Tools": {
+    title: "SEO",
+    description: "Meta tags, sitemap and search optimization helpers",
+    accent: "#6ab7ff",
+    soft: "rgba(106, 183, 255, 0.16)",
+    glow: "rgba(106, 183, 255, 0.34)",
+    icon: Search,
+    eyebrow: "SEO",
   },
   Calculators: {
     title: "Calculator",
@@ -66,9 +91,17 @@ const CATEGORY_META: Record<
 };
 
 export default function ToolStudioClient() {
+  const searchParams = useSearchParams();
+  const requestedCategory = searchParams.get("category");
   const [activeCategory, setActiveCategory] = useState<string>(categories[0] ?? "");
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
+
+  useEffect(() => {
+    if (requestedCategory && isToolCategory(requestedCategory)) {
+      setActiveCategory(requestedCategory);
+    }
+  }, [requestedCategory]);
 
   const toolCounts = useMemo(
     () =>
@@ -104,7 +137,7 @@ export default function ToolStudioClient() {
 
   return (
     <div
-      data-studio-theme="light"
+      data-studio-theme="dark"
       className="studio-page studio-browser-page"
       style={pageStyle}
     >
@@ -131,6 +164,7 @@ export default function ToolStudioClient() {
           <div className="studio-browser-cats-grid">
             {categories.map((category) => {
               const meta = CATEGORY_META[category];
+              if (!meta) return null;
               const Icon = meta.icon;
               const isActive = activeCategory === category;
 

@@ -7,6 +7,8 @@ import { Zap, Home } from "lucide-react";
 
 import Footer from "@/components/layout/Footer";
 import LoadingCurtain from "@/components/layout/LoadingCurtain";
+import ThemeBoot from "@/components/theme/ThemeBoot";
+import { categories } from "@/lib/tools";
 import {
   defaultDescription,
   defaultKeywords,
@@ -46,7 +48,7 @@ export const metadata: Metadata = {
     description: defaultDescription,
     images: [
       {
-        url: "/logo/logo-black.png",
+        url: "/logo/logo-white.png",
         alt: `${siteName} logo`,
       },
     ],
@@ -55,7 +57,7 @@ export const metadata: Metadata = {
     card: "summary",
     title: `${siteName} - Free Online Tools`,
     description: defaultDescription,
-    images: ["/logo/logo-black.png"],
+    images: ["/logo/logo-white.png"],
   },
   icons: {
     icon: [{ url: "/favicon.png", type: "image/png" }],
@@ -69,20 +71,26 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const navCategories = categories.map((category) => ({
+    value: category,
+    label: category === "Calculators" ? "Calculators" : category.replace(" Tools", ""),
+  }));
+
   return (
     <html lang="en" className={`${outfit.variable} scroll-smooth`}>
       <body
         style={{
-          background: "var(--nm-bg, #e8e0d8)",
-          color: "var(--nm-text, #374151)",
+          background: "var(--nm-bg, #111827)",
+          color: "var(--nm-text, #e5eefc)",
           transition: "background 0.35s ease, color 0.35s ease",
         }}
-        className="flex min-h-screen flex-col text-gray-700 antialiased"
+        className="flex min-h-screen flex-col antialiased"
       >
+        <ThemeBoot />
         <header
           className="site-header sticky top-0 z-50"
           style={{
-            background: "var(--nm-bg, #e8e0d8)",
+            background: "var(--nm-bg, #111827)",
             boxShadow: "var(--nm-shadow-out, 0 0 0 transparent)",
             transition: "background 0.35s ease, box-shadow 0.35s ease",
           }}
@@ -90,7 +98,7 @@ export default function RootLayout({
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-5 sm:py-3.5">
             <Link href="/" className="group flex items-center">
               <Image
-                src="/logo/logo-black.png"
+                src="/logo/logo-white.png"
                 alt="Toolmitra"
                 width={120}
                 height={40}
@@ -105,12 +113,9 @@ export default function RootLayout({
               />
             </Link>
 
-            <nav className="hidden items-center gap-2 md:flex">
+            <nav className="hidden items-center gap-2 lg:flex">
               <Link href="/" className="btn-ghost navbar-link">
                 Home
-              </Link>
-              <Link href="/privacy-policy" className="btn-ghost navbar-link">
-                Privacy
               </Link>
               <Link href="/tools" className="btn btn-sm ml-1">
                 <Zap size={13} className="fill-white" />
@@ -122,11 +127,26 @@ export default function RootLayout({
             <Link
               href="/"
               aria-label="Go to Home"
-              className="mobile-home-btn md:hidden"
+              className="mobile-home-btn lg:hidden"
             >
               <Home size={16} strokeWidth={2.2} />
             </Link>
           </div>
+
+          <nav className="site-category-strip" aria-label="Tool categories">
+            <div className="site-category-strip__inner">
+              {navCategories.map((category) => (
+                <Link
+                  key={category.value}
+                  href={`/tools?category=${encodeURIComponent(category.value)}#tools`}
+                  className="site-category-strip__link"
+                >
+                  {category.label}
+                </Link>
+              ))}
+            </div>
+          </nav>
+
         </header>
 
         <LoadingCurtain />

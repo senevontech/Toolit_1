@@ -23,39 +23,39 @@
 
 /* ── Root tokens ── */
 :root {
-  --nm-bg: #e8e0d8;
-  --nm-surface: #e8e0d8;
-  --nm-accent: #e07a5f;
-  --nm-accent-dark: #c4624a;
-  --nm-accent-ink: #9d4f3b;
-  --nm-text: #4a3f38;
-  --nm-text-muted: #7a6e68;
+  --nm-bg: #050507;
+  --nm-surface: #111115;
+  --nm-accent: #f4f4f5;
+  --nm-accent-dark: #d4d4d8;
+  --nm-accent-ink: #f5f5f5;
+  --nm-text: #f2f2f7;
+  --nm-text-muted: #7b7b82;
   --nm-on-accent: #ffffff;
   --nm-on-accent-muted: rgba(255, 255, 255, 0.88);
   --nm-white: #ffffff;
-  --nm-glow: rgba(224, 122, 95, 0.2);
-  --nm-glow-soft: rgba(224, 122, 95, 0.12);
-  --nm-glow-strong: rgba(224, 122, 95, 0.3);
-  --nm-accent-soft: rgba(224, 122, 95, 0.1);
-  --nm-accent-surface: rgba(224, 122, 95, 0.18);
-  --nm-meter-color: #e07a5f;
-  --nm-meter-glow: rgba(224, 122, 95, 0.34);
-  --nm-footer-bg: #c4624a;
+  --nm-glow: rgba(255, 255, 255, 0.04);
+  --nm-glow-soft: rgba(255, 255, 255, 0.02);
+  --nm-glow-strong: rgba(255, 255, 255, 0.08);
+  --nm-accent-soft: rgba(255, 255, 255, 0.06);
+  --nm-accent-surface: rgba(255, 255, 255, 0.08);
+  --nm-meter-color: #f5f5f5;
+  --nm-meter-glow: rgba(255, 255, 255, 0.14);
+  --nm-footer-bg: #020202;
   --nm-footer-text: #ffffff;
   --nm-footer-text-muted: rgba(255, 255, 255, 0.78);
   --nm-footer-text-soft: rgba(255, 255, 255, 0.58);
   --nm-footer-border: rgba(255, 255, 255, 0.16);
-  --nm-shadow-dark-color: #c9c2bb;
-  --nm-shadow-dark-strong-color: #c0b9b2;
-  --nm-shadow-light-color: #ffffff;
+  --nm-shadow-dark-color: rgba(7, 9, 18, 0.82);
+  --nm-shadow-dark-strong-color: rgba(5, 8, 20, 0.88);
+  --nm-shadow-light-color: rgba(255, 255, 255, 0.08);
 
-  /* Neumorphism shadows */
-  --nm-shadow-out: 6px 6px 14px #c9c2bb, -6px -6px 14px #ffffff;
-  --nm-shadow-in:  inset 4px 4px 10px #c9c2bb, inset -4px -4px 10px #ffffff;
-  --nm-shadow-lg:  10px 10px 22px #c0b9b2, -10px -10px 22px #ffffff;
-  --nm-shadow-hover: 8px 8px 18px #c0b9b2, -8px -8px 18px #ffffff;
-  --nm-shadow-press: 3px 3px 8px #c9c2bb, -3px -3px 8px #ffffff;
-  --nm-shadow-accent-press: inset 6px 6px 14px rgba(120, 74, 60, 0.76), inset -6px -6px 14px rgba(255, 241, 234, 0.9);
+  /* Neumorphism shadows — dark palette */
+  --nm-shadow-out:   6px 6px 14px rgba(0,0,0,0.82),  -6px -6px 14px rgba(255,255,255,0.06);
+  --nm-shadow-in:    inset 4px 4px 10px rgba(0,0,0,0.84),  inset -4px -4px 10px rgba(255,255,255,0.05);
+  --nm-shadow-lg:    10px 10px 22px rgba(0,0,0,0.88),  -10px -10px 22px rgba(255,255,255,0.06);
+  --nm-shadow-hover: 8px 8px 18px rgba(0,0,0,0.84),  -8px -8px 18px rgba(255,255,255,0.05);
+  --nm-shadow-press: 3px 3px 8px rgba(0,0,0,0.72),  -3px -3px 8px rgba(255,255,255,0.04);
+  --nm-shadow-accent-press: inset 6px 6px 14px rgba(150,40,0,0.58),  inset -6px -6px 14px rgba(255,150,80,0.28);
 
   --nm-radius-sm: 14px;
   --nm-radius-md: 20px;
@@ -68,9 +68,9 @@
 .nm-page {
   min-height: 100vh;
   background:
-    radial-gradient(circle at 12% 10%, var(--nm-glow-soft) 0, transparent 20rem),
-    radial-gradient(circle at 88% 12%, var(--nm-glow) 0, transparent 24rem),
-    linear-gradient(180deg, var(--nm-surface) 0%, var(--nm-bg) 100%);
+    radial-gradient(circle at 100% 100%, rgba(255,255,255,0.03) 0, transparent 18rem),
+    radial-gradient(circle at 100% 0%, rgba(255,255,255,0.018) 0, transparent 16rem),
+    linear-gradient(180deg, #050505 0%, #020202 55%, #000000 100%);
   color: var(--nm-text);
   font-family: var(--font-geometric), system-ui, sans-serif;
   /* Override site-body styles */
@@ -109,7 +109,8 @@ body.nm-theme-meter-open {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--nm-bg);
+  background: rgba(2, 2, 2, 0.88);
+  backdrop-filter: blur(12px);
   box-shadow: 0 8px 22px var(--nm-glow-soft), var(--nm-shadow-out);
 }
 
@@ -140,7 +141,7 @@ body.nm-theme-meter-open {
   padding: 9px 26px;
   border-radius: var(--nm-radius-pill);
   background: var(--nm-bg);
-  color: var(--nm-accent-ink);
+  color: #e8e8ea;
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.3px;
@@ -164,8 +165,8 @@ body.nm-theme-meter-open {
   width: 42px;
   height: 42px;
   border-radius: var(--nm-radius-full);
-  background: var(--nm-accent);
-  color: var(--nm-on-accent);
+  background: linear-gradient(180deg, #f5f5f5, #d8d8dc);
+  color: #050505;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -343,8 +344,8 @@ body.nm-theme-meter-open {
   justify-content: center;
   padding: 12px 30px;
   border-radius: var(--nm-radius-pill);
-  background: var(--nm-accent);
-  color: var(--nm-on-accent);
+  background: linear-gradient(180deg, #f5f5f5, #d8d8dc);
+  color: #050505;
   font-size: 0.88rem;
   font-weight: 700;
   text-decoration: none;
@@ -477,14 +478,14 @@ body.nm-theme-meter-open {
   /* Larger padding = smaller inner circle = wider arc band */
   padding: 34px;
   border-radius: 50%;
-  /* Track: transparent center, subtle ring area aligned with the wider arc */
+  /* Track: transparent center, subtle ring area — dark palette */
   background: radial-gradient(
     circle,
     transparent 0%,
     transparent 65%,
-    rgba(214, 216, 236, 0.4) 66%,
-    rgba(244, 245, 252, 0.88) 83%,
-    rgba(228, 230, 244, 0.55) 100%
+    rgba(45, 60, 95, 0.25) 66%,
+    rgba(30, 36, 56, 0.88) 83%,
+    rgba(20, 24, 36, 0.55) 100%
   );
 }
 
@@ -677,7 +678,7 @@ body.nm-theme-meter-open {
   display: flex;
   align-items: center;
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.18));
+  background: linear-gradient(180deg, rgba(30,36,56,0.95), rgba(20,24,36,0.70));
   box-shadow:
     inset 8px 8px 16px var(--nm-shadow-dark-color),
     inset -8px -8px 16px var(--nm-shadow-light-color);
@@ -804,7 +805,7 @@ body.nm-theme-meter-open {
 .nm-tool-card {
   position: relative;
   border-radius: var(--nm-radius-md);
-  background: var(--nm-bg);
+  background: linear-gradient(180deg, #0b0b0d, #030304);
   box-shadow: var(--nm-shadow-lg);
   padding: 20px;
   display: flex;
@@ -1115,7 +1116,7 @@ body.nm-theme-meter-open {
    FOOTER
    ========================================================= */
 .nm-footer {
-  background: var(--nm-footer-bg);
+  background: linear-gradient(180deg, #070707, #010101);
   color: var(--nm-footer-text);
   padding: 0;
 }
@@ -1303,7 +1304,7 @@ body.nm-theme-meter-open {
     top: 0;
     z-index: 1;
     padding-bottom: 4px;
-    background: linear-gradient(180deg, var(--nm-surface), rgba(255, 255, 255, 0));
+    background: linear-gradient(180deg, var(--nm-surface), transparent);
   }
   .nm-theme-meter-backdrop {
     position: fixed;

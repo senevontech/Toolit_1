@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ConverterModule } from './converter/converter.module';
+import { DomainModule } from './domain/domain.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { ConverterModule } from './converter/converter.module';
       }),
     }),
 
-    ConverterModule   // ⭐ VERY IMPORTANT
+    ConverterModule,
+    DomainModule,
   ],
 })
 export class AppModule {}

@@ -8,6 +8,8 @@ import {
   Code2,
   FileText,
   Image as ImageIcon,
+  Search,
+  Video,
   Sparkles,
   type LucideIcon,
 } from "lucide-react";
@@ -62,6 +64,28 @@ const CATEGORY_META: Record<
       "Paste the input or upload the content for processing.",
       "Apply the formatting, encoding, or generation action.",
       "Copy or download the final output immediately.",
+    ],
+  },
+  "Video Tools": {
+    icon: Video,
+    accent: "#ff875c",
+    copy:
+      "This video workflow is built for practical media tasks like extracting audio, trimming clips, compressing uploads, and pulling useful preview assets.",
+    steps: [
+      "Upload a video file or paste the video link required by the tool.",
+      "Choose the processing option that matches the result you want.",
+      "Generate and download the finished media output when processing completes.",
+    ],
+  },
+  "SEO Tools": {
+    icon: Search,
+    accent: "#ff875c",
+    copy:
+      "This SEO workflow helps you prepare practical search-optimization assets like meta tags, sitemaps, robots files, and share-preview markup from one browser-based workspace.",
+    steps: [
+      "Paste the page content, URLs, or SEO fields needed by the tool.",
+      "Adjust the generator or checker options for your use case.",
+      "Copy the generated output directly into your site or CMS.",
     ],
   },
   Calculators: {
@@ -122,6 +146,18 @@ function getBenefits(toolName: string, category: string) {
         `Use ${toolName} for fast technical tasks in the browser.`,
         "Reduce context switching during debugging or formatting work.",
         "Get clean output that is easy to copy or download.",
+      ];
+    case "Video Tools":
+      return [
+        `Use ${toolName} for quick browser-based video workflows.`,
+        "Handle common media tasks without opening a full editor.",
+        "Prepare lighter, cleaner video outputs for everyday sharing.",
+      ];
+    case "SEO Tools":
+      return [
+        `Use ${toolName} for fast browser-based SEO tasks.`,
+        "Generate practical markup and optimization assets without extra plugins.",
+        "Copy clean output directly into your website workflow.",
       ];
     default:
       return [
@@ -245,24 +281,24 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
         <section className="neu-card mt-6 p-6 md:p-8">
           <div className="grid gap-6 md:grid-cols-[1.25fr,0.95fr]">
             <article>
-              <h2 className="text-2xl font-extrabold text-slate-800">
+              <h2 className="text-2xl font-extrabold text-slate-100">
                 About {tool.name}
               </h2>
-              <p className="mt-3 text-sm leading-7 text-slate-600">
+              <p className="mt-3 text-sm leading-7 text-slate-400">
                 {buildToolDescription(tool)}
               </p>
-              <p className="mt-3 text-sm leading-7 text-slate-600">
+              <p className="mt-3 text-sm leading-7 text-slate-400">
                 {meta?.copy}
               </p>
             </article>
 
             <aside>
-              <h2 className="text-2xl font-extrabold text-slate-800">
+              <h2 className="text-2xl font-extrabold text-slate-100">
                 How to use
               </h2>
-              <ol className="mt-3 space-y-3 text-sm leading-7 text-slate-600">
+              <ol className="mt-3 space-y-3 text-sm leading-7 text-slate-400">
                 {(meta?.steps ?? []).map((step) => (
-                  <li key={step} className="rounded-2xl bg-white/60 px-4 py-3">
+                  <li key={step} className="rounded-2xl bg-slate-700/40 px-4 py-3">
                     {step}
                   </li>
                 ))}
@@ -272,27 +308,27 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
         </section>
 
         <section className="neu-card mt-6 p-6 md:p-8">
-          <h2 className="text-2xl font-extrabold text-slate-800">
+          <h2 className="text-2xl font-extrabold text-slate-100">
             Why use {tool.name}
           </h2>
           <div className="mt-4 grid gap-4 md:grid-cols-3">
             {benefits.map((benefit) => (
-              <article key={benefit} className="rounded-2xl bg-white/60 px-4 py-4">
-                <p className="text-sm leading-7 text-slate-600">{benefit}</p>
+              <article key={benefit} className="rounded-2xl bg-slate-700/40 px-4 py-4">
+                <p className="text-sm leading-7 text-slate-400">{benefit}</p>
               </article>
             ))}
           </div>
         </section>
 
         <section className="neu-card mt-6 p-6 md:p-8">
-          <h2 className="text-2xl font-extrabold text-slate-800">
+          <h2 className="text-2xl font-extrabold text-slate-100">
             {tool.name} FAQ
           </h2>
           <div className="mt-4 space-y-4">
             {faqs.map((faq) => (
-              <article key={faq.question} className="rounded-2xl bg-white/60 px-4 py-4">
-                <h3 className="text-base font-bold text-slate-800">{faq.question}</h3>
-                <p className="mt-2 text-sm leading-7 text-slate-600">{faq.answer}</p>
+              <article key={faq.question} className="rounded-2xl bg-slate-700/40 px-4 py-4">
+                <h3 className="text-base font-bold text-slate-100">{faq.question}</h3>
+                <p className="mt-2 text-sm leading-7 text-slate-400">{faq.answer}</p>
               </article>
             ))}
           </div>
@@ -300,10 +336,10 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
 
         {relatedTools.length ? (
           <section className="neu-card mt-6 p-6 md:p-8">
-            <h2 className="text-2xl font-extrabold text-slate-800">
+            <h2 className="text-2xl font-extrabold text-slate-100">
               Related {tool.category}
             </h2>
-            <p className="mt-3 text-sm leading-7 text-slate-600">
+            <p className="mt-3 text-sm leading-7 text-slate-400">
               Explore more tools in the same category to keep related workflows
               connected across the site.
             </p>
@@ -312,12 +348,12 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
                 <Link
                   key={relatedTool.slug}
                   href={`/tools/${relatedTool.slug}`}
-                  className="rounded-2xl bg-white/60 px-4 py-4 transition hover:bg-white"
+                  className="rounded-2xl bg-slate-700/40 px-4 py-4 transition hover:bg-slate-700/60"
                 >
-                  <h3 className="text-base font-bold text-slate-800">
+                  <h3 className="text-base font-bold text-slate-100">
                     {relatedTool.name}
                   </h3>
-                  <p className="mt-2 text-sm leading-7 text-slate-600">
+                  <p className="mt-2 text-sm leading-7 text-slate-400">
                     {relatedTool.description}
                   </p>
                 </Link>

@@ -1,13 +1,16 @@
 "use client";
 
 import { type CSSProperties, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import type { ToolCategory } from "@/types/tool.types";
 import {
   Search,
   ImageIcon,
   FileText,
   Code2,
   Calculator,
+  Video,
   ArrowRight,
   type LucideIcon,
 } from "lucide-react";
@@ -15,10 +18,16 @@ import {
 import { tools, categories } from "@/lib/tools";
 import "./alltools.css";
 
+function isToolCategory(value: string): value is ToolCategory {
+  return (categories as string[]).includes(value);
+}
+
 type CategoryKey =
   | "Image Tools"
   | "Document Tools"
+  | "Video Tools"
   | "Developer Tools"
+  | "SEO Tools"
   | "Calculators";
 
 const CATEGORY_META: Record<
@@ -27,13 +36,23 @@ const CATEGORY_META: Record<
 > = {
   "Image Tools": { icon: ImageIcon, label: "Image", desc: "Compress, resize & convert images", color: "#5b8dee" },
   "Document Tools": { icon: FileText, label: "Document", desc: "PDF, Word & Excel conversions", color: "#e07a5f" },
+  "Video Tools": { icon: Video, label: "Video", desc: "Convert, trim & optimize video files", color: "#f97316" },
   "Developer Tools": { icon: Code2, label: "Developer", desc: "JSON, QR codes & Base64 utilities", color: "#3db36b" },
+  "SEO Tools": { icon: Search, label: "SEO", desc: "Meta tags, sitemap & content SEO helpers", color: "#6ab7ff" },
   Calculators: { icon: Calculator, label: "Calculator", desc: "GST, EMI, SIP & more", color: "#9b72e8" },
 };
 
 export default function AllToolsClient() {
+  const searchParams = useSearchParams();
+  const requestedCategory = searchParams.get("category");
   const [activeCategory, setActiveCategory] = useState<string>(categories[0]);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (requestedCategory && isToolCategory(requestedCategory)) {
+      setActiveCategory(requestedCategory);
+    }
+  }, [requestedCategory]);
 
   // On hard refresh, reapply the last color-engine theme from localStorage
   useEffect(() => {

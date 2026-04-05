@@ -8,15 +8,16 @@ import {
 
 import AllToolsClient from "../home2/AllToolsClient";
 
-
 export const metadata = buildMetadata({
   title: "All Tools",
   description:
-    "Browse every Toolmitra tool for PDFs, images, developer tasks, and calculators in one searchable catalog.",
+    "Browse every Toolmitra tool for PDFs, images, videos, SEO tasks, developer workflows, and calculators in one searchable catalog.",
   path: "/tools/",
   keywords: [
     "all online tools",
     "pdf and image tools",
+    "video tools online",
+    "seo tools online",
     "developer utilities",
     "online calculator tools",
   ],
@@ -30,7 +31,7 @@ export default function ToolsPage() {
           path: "/tools/",
           title: "Toolmitra Tools Directory",
           description:
-            "Search and browse Toolmitra tools for images, documents, developer workflows, and calculators.",
+            "Search and browse Toolmitra tools for images, documents, videos, SEO workflows, developer utilities, and calculators.",
           items: tools.map((tool) => ({
             name: tool.name,
             url: absoluteUrl(`/tools/${tool.slug}/`),
@@ -38,17 +39,17 @@ export default function ToolsPage() {
           })),
         })}
       />
-      <section className="px-4 pt-14 pb-10 md:px-8">
+      <section className="px-4 pb-10 pt-14 md:px-8">
         <div className="mx-auto max-w-5xl">
-          <span className="inline-block rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-violet-600">
+          <span className="inline-block rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-orange-300">
             Directory
           </span>
-          <h1 className="mt-4 text-5xl font-extrabold tracking-tight text-slate-900">
+          <h1 className="mt-4 text-5xl font-extrabold tracking-tight text-slate-100">
             All Tools
           </h1>
-          <p className="mt-3 max-w-xl text-base leading-relaxed text-slate-500">
+          <p className="mt-3 max-w-xl text-base leading-relaxed text-slate-400">
             Browse every tool for image optimization, PDF workflows, developer
-            tasks, and calculators — all in one place.
+            tasks, and calculators all in one place.
           </p>
         </div>
       </section>

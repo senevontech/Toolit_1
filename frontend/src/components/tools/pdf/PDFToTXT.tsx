@@ -1,18 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { getDocument, GlobalWorkerOptions, version } from "pdfjs-dist";
-
-GlobalWorkerOptions.workerSrc =
-  `https://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.min.mjs`;
 
 export default function PDFToTXT() {
   const [text, setText] = useState("");
 
   const handleFile = async (file: File) => {
     const arrayBuffer = await file.arrayBuffer();
+    const pdfjs = (await import("pdfjs-dist/legacy/build/pdf.mjs")) as any;
+    pdfjs.GlobalWorkerOptions.workerSrc =
+      `https://unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
 
-    const pdf = await getDocument({
+    const pdf = await pdfjs.getDocument({
       data: arrayBuffer,
     }).promise;
 

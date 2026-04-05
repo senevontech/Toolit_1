@@ -1,12 +1,27 @@
+import { existsSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { NextFunction, Request, Response } from 'express';
+import { NestExpressApplication } from '@nestjs/platform-express';
+
+function resolveFrontendDistDir() {
+  const candidates = [
+    resolve(process.cwd(), '../frontend/dist'),
+    resolve(process.cwd(), 'frontend/dist'),
+    resolve(__dirname, '../../frontend/dist'),
+    resolve(__dirname, '../../../frontend/dist'),
+  ];
+
+  return candidates.find((candidate) => existsSync(candidate)) ?? null;
+}
 
 function normalizeOrigin(origin: string) {
   return origin.trim().replace(/\/+$/, '');
 }
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const corsOrigins = (
     process.env.ALLOWED_ORIGINS ??
@@ -31,12 +46,77 @@ async function bootstrap() {
     credentials: true,
   });
 
+  const frontendDistDir = resolveFrontendDistDir();
+
+  if (frontendDistDir) {
+    app.useStaticAssets(frontendDistDir, {
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html')) {
+          res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+          return;
+        }
+
+        if (filePath.includes(`${join('_next', 'static')}`)) {
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+          return;
+        }
+
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+      },
+    });
+
+    app
+      .getHttpAdapter()
+      .getInstance()
+      .get(/.*/, (req: Request, res: Response, next: NextFunction) => {
+      if (req.method !== 'GET') {
+        return next();
+      }
+
+      if (
+        req.path.startsWith('/converter') ||
+        req.path.startsWith('/api')
+      ) {
+        return next();
+      }
+
+      if (
+        req.path.includes('.')
+      ) {
+        return res.status(404).end();
+      }
+
+      const normalizedPath = req.path === '/' ? '' : req.path.replace(/^\/+|\/+$/g, '');
+      const routeHtmlPath = normalizedPath
+        ? join(frontendDistDir, ...normalizedPath.split('/'), 'index.html')
+        : join(frontendDistDir, 'index.html');
+
+      if (existsSync(routeHtmlPath)) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+        return res.sendFile(routeHtmlPath);
+      }
+
+      const notFoundPage = join(frontendDistDir, '404.html');
+      if (existsSync(notFoundPage)) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+        return res.status(404).sendFile(notFoundPage);
+      }
+
+      return res.status(404).end();
+    });
+  }
+
   const port = Number(process.env.PORT) || 5000;
 
   await app.listen(port, '0.0.0.0');
 
   console.log(`Backend running on http://0.0.0.0:${port}`);
   console.log(`Allowed CORS origins: ${corsOrigins.join(', ')}`);
+  console.log(
+    frontendDistDir
+      ? `Serving frontend from ${frontendDistDir}`
+      : 'Frontend dist not found; API-only mode enabled',
+  );
 }
 
 bootstrap();

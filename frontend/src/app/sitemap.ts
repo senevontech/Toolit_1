@@ -1,35 +1,38 @@
 import type { MetadataRoute } from "next";
 
+import { siteUrl } from "@/lib/seo";
 import { tools } from "@/lib/tools";
-import { absoluteUrl } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
-  return [
+  const staticRoutes: MetadataRoute.Sitemap = [
     {
-      url: absoluteUrl("/"),
+      url: `${siteUrl}/`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 1,
     },
     {
-      url: absoluteUrl("/tools/"),
+      url: `${siteUrl}/tools/`,
       lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.9,
+      changeFrequency: "daily",
+      priority: 0.95,
     },
     {
-      url: absoluteUrl("/privacy-policy/"),
+      url: `${siteUrl}/privacy-policy/`,
       lastModified: now,
       changeFrequency: "yearly",
       priority: 0.3,
     },
-    ...tools.map((tool) => ({
-      url: absoluteUrl(`/tools/${tool.slug}/`),
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: 0.8,
-    })),
   ];
+
+  const toolRoutes: MetadataRoute.Sitemap = tools.map((tool) => ({
+    url: `${siteUrl}/tools/${tool.slug}/`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
+
+  return [...staticRoutes, ...toolRoutes];
 }
