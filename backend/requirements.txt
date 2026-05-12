@@ -3,3 +3,5 @@ pdfplumber
 openpyxl
 pdf2image
 python-pptx
+PyPDF2
+PyMuPDF

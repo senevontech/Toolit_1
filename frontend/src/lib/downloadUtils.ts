@@ -21,7 +21,7 @@ export const downloadFile = (
     link.click();
     document.body.removeChild(link);
 
-    URL.revokeObjectURL(url);
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
   } catch (error) {
     console.error("Download failed:", error);
   }

@@ -54,7 +54,7 @@ async function buildRasterCandidate(
   quality: number,
   getDocumentFn: (src: { data: ArrayBuffer }) => { promise: Promise<any> }
 ) {
-  const srcPdf = await getDocumentFn({ data: bytes }).promise;
+  const srcPdf = await getDocumentFn({ data: bytes.slice(0) }).promise;
   const outPdf = await PDFDocument.create();
 
   for (let i = 1; i <= srcPdf.numPages; i += 1) {
@@ -204,6 +204,8 @@ export default function PDFCompressor() {
           { scale: 0.9, quality: 0.62 },
           { scale: 0.8, quality: 0.55 },
           { scale: 0.7, quality: 0.48 },
+          { scale: 0.6, quality: 0.38 },
+          { scale: 0.5, quality: 0.3 },
         ];
 
         for (let i = 0; i < passes.length; i += 1) {

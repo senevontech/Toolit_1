@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { apiEndpoint } from "@/lib/api";
 
 export default function UnlockPDF() {
   const [file, setFile] = useState<File | null>(null);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleUnlock = async () => {
     if (!file || !password) {
@@ -15,18 +17,20 @@ export default function UnlockPDF() {
 
     try {
       setLoading(true);
+      setError("");
 
       const formData = new FormData();
       formData.append("file", file);
       formData.append("password", password);
 
-      const res = await fetch("http://localhost:5000/converter/pdf-unlock", {
+      const res = await fetch(apiEndpoint("/converter/pdf-unlock"), {
         method: "POST",
         body: formData,
       });
 
       if (!res.ok) {
-        throw new Error("Unlock failed");
+        const message = await res.text().catch(() => "");
+        throw new Error(message || "Unlock failed");
       }
 
       const blob = await res.blob();
@@ -35,13 +39,15 @@ export default function UnlockPDF() {
       const a = document.createElement("a");
       a.href = url;
       a.download = "unlocked.pdf";
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
 
-      window.URL.revokeObjectURL(url);
+      window.setTimeout(() => window.URL.revokeObjectURL(url), 0);
 
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to unlock PDF (wrong password or corrupted file)");
+      setError(err?.message || "Failed to unlock PDF (wrong password or corrupted file)");
     } finally {
       setLoading(false);
     }
@@ -70,10 +76,12 @@ export default function UnlockPDF() {
         className="border p-2 mb-4 block"
       />
 
+      {error ? <p className="mb-4 text-sm text-red-600">{error}</p> : null}
+
       <button
         onClick={handleUnlock}
-        disabled={loading}
-        className="bg-green-500 text-white px-6 py-2 rounded"
+        disabled={!file || !password || loading}
+        className="bg-green-500 text-white px-6 py-2 rounded disabled:opacity-50"
       >
         {loading ? "Processing..." : "Unlock PDF"}
       </button>

@@ -11,6 +11,7 @@ type VideoUploadShellProps = {
   configTitle: string;
   configFields: React.ReactNode;
   processingNote: string;
+  onProcess: (file: File) => Promise<void>;
 };
 
 function formatFileSize(size: number) {
@@ -29,8 +30,11 @@ export default function VideoUploadShell({
   configTitle,
   configFields,
   processingNote,
+  onProcess,
 }: VideoUploadShellProps) {
   const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   const previewUrl = useMemo(() => {
     if (!file) return null;
@@ -44,6 +48,22 @@ export default function VideoUploadShell({
   };
 
   const clearFile = () => setFile(null);
+
+  const handleProcess = async () => {
+    if (!file || loading) return;
+
+    setLoading(true);
+    setMessage("");
+
+    try {
+      await onProcess(file);
+      setMessage("Done. Your download should start automatically.");
+    } catch (error: any) {
+      setMessage(error?.message || "Video processing failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="tool-container">
@@ -124,9 +144,17 @@ export default function VideoUploadShell({
               <p className="mt-3 text-sm leading-7 text-slate-400">
                 {processingNote}
               </p>
-              <button type="button" className="btn mt-5" disabled={!file}>
-                {ctaLabel}
+              <button
+                type="button"
+                className="btn mt-5"
+                disabled={!file || loading}
+                onClick={handleProcess}
+              >
+                {loading ? "Processing..." : ctaLabel}
               </button>
+              {message ? (
+                <p className="mt-3 text-sm leading-6 text-slate-400">{message}</p>
+              ) : null}
             </section>
           </div>
         </section>

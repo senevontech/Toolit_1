@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { apiEndpoint } from "@/lib/api";
 
 export default function ProtectPDF() {
   const [file, setFile] = useState<File | null>(null);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleProtect = async () => {
     if (!file || !password) {
@@ -15,18 +17,20 @@ export default function ProtectPDF() {
 
     try {
       setLoading(true);
+      setError("");
 
       const formData = new FormData();
       formData.append("file", file);
       formData.append("password", password);
 
-      const res = await fetch("http://localhost:5000/converter/pdf-protect", {
+      const res = await fetch(apiEndpoint("/converter/pdf-protect"), {
         method: "POST",
         body: formData,
       });
 
       if (!res.ok) {
-        throw new Error("Conversion failed");
+        const message = await res.text().catch(() => "");
+        throw new Error(message || "Conversion failed");
       }
 
       // download file
@@ -36,13 +40,15 @@ export default function ProtectPDF() {
       const a = document.createElement("a");
       a.href = url;
       a.download = "protected.pdf";
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
 
-      window.URL.revokeObjectURL(url);
+      window.setTimeout(() => window.URL.revokeObjectURL(url), 0);
 
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to protect PDF");
+      setError(err?.message || "Failed to protect PDF");
     } finally {
       setLoading(false);
     }
@@ -67,10 +73,12 @@ export default function ProtectPDF() {
         className="border p-2 mb-4 block"
       />
 
+      {error ? <p className="mb-4 text-sm text-red-600">{error}</p> : null}
+
       <button
         onClick={handleProtect}
-        disabled={loading}
-        className="bg-orange-500 text-white px-6 py-2 rounded"
+        disabled={!file || !password || loading}
+        className="bg-orange-500 text-white px-6 py-2 rounded disabled:opacity-50"
       >
         {loading ? "Processing..." : "Protect PDF"}
       </button>

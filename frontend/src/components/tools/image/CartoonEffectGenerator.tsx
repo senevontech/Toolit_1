@@ -30,31 +30,40 @@ export default function CartoonEffectGenerator() {
 
         const imageData = context.getImageData(0, 0, image.width, image.height);
         const data = imageData.data;
+        const source = new Uint8ClampedArray(data);
         const quantizeStep =
           colorMode === "bold" ? Math.max(16, 48 - Math.round(intensity / 4)) :
           colorMode === "soft" ? Math.max(20, 64 - Math.round(intensity / 5)) :
           Math.max(18, 56 - Math.round(intensity / 4.5));
-        const edgeThreshold = 28 + Math.round(intensity / 3);
+        const edgeThreshold = 22 + Math.round((100 - intensity) / 4);
+        const edgeStrength = colorMode === "soft" ? 42 : colorMode === "bold" ? 82 : 62;
 
-        for (let index = 0; index < data.length; index += 4) {
+        for (let y = 0; y < image.height; y += 1) {
+          for (let x = 0; x < image.width; x += 1) {
+            const index = (y * image.width + x) * 4;
           const red = data[index];
           const green = data[index + 1];
           const blue = data[index + 2];
-          const average = (red + green + blue) / 3;
-          const diff = Math.max(
-            Math.abs(red - green),
-            Math.abs(green - blue),
-            Math.abs(blue - red)
-          );
 
           data[index] = clampChannel(Math.round(red / quantizeStep) * quantizeStep);
           data[index + 1] = clampChannel(Math.round(green / quantizeStep) * quantizeStep);
           data[index + 2] = clampChannel(Math.round(blue / quantizeStep) * quantizeStep);
 
-          if (diff < edgeThreshold && average < 170) {
-            data[index] = clampChannel(data[index] - 40);
-            data[index + 1] = clampChannel(data[index + 1] - 40);
-            data[index + 2] = clampChannel(data[index + 2] - 40);
+            const right = (y * image.width + Math.min(image.width - 1, x + 1)) * 4;
+            const below = (Math.min(image.height - 1, y + 1) * image.width + x) * 4;
+            const currentLum = source[index] * 0.299 + source[index + 1] * 0.587 + source[index + 2] * 0.114;
+            const rightLum = source[right] * 0.299 + source[right + 1] * 0.587 + source[right + 2] * 0.114;
+            const belowLum = source[below] * 0.299 + source[below + 1] * 0.587 + source[below + 2] * 0.114;
+            const edge = Math.max(
+              Math.abs(currentLum - rightLum),
+              Math.abs(currentLum - belowLum)
+            );
+
+            if (edge > edgeThreshold) {
+              data[index] = clampChannel(data[index] - edgeStrength);
+              data[index + 1] = clampChannel(data[index + 1] - edgeStrength);
+              data[index + 2] = clampChannel(data[index + 2] - edgeStrength);
+            }
           }
         }
 

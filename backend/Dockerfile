@@ -5,6 +5,7 @@ FROM node:20-bullseye
 RUN apt-get update && \
     apt-get install -y \
       libreoffice \
+      ffmpeg \
       python3 \
       python3-pip \
       poppler-utils \
@@ -16,7 +17,9 @@ RUN pip3 install --no-cache-dir \
     pdfplumber \
     openpyxl \
     pdf2image \
-    python-pptx
+    python-pptx \
+    PyPDF2 \
+    PyMuPDF
 
 # Set working directory
 WORKDIR /usr/src/app

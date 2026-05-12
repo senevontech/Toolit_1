@@ -14,6 +14,8 @@ const fmt = (bytes: number) => {
   return (bytes / 1024 / 1024).toFixed(2) + " MB";
 };
 
+const clampTargetKb = (value: number) => Math.max(20, Math.min(51200, value || 20));
+
 export default function ImageCompressor() {
   const [files, setFiles]               = useState<FileWithPreview[]>([]);
   const [compressed, setCompressed]     = useState<File[]>([]);
@@ -44,15 +46,41 @@ export default function ImageCompressor() {
     if (!files.length) return;
     setLoading(true);
     const results: File[] = [];
-    const targetBytes = targetSizeKB * 1024;
+    const targetKb = clampTargetKb(targetSizeKB);
+    const targetBytes = targetKb * 1024;
+
     for (const item of files) {
-      let min = 0.1, max = 1, out = item.file;
-      for (let i = 0; i < 8; i++) {
+      let min = 0.05;
+      let max = 1;
+      let out = item.file;
+      let best = item.file;
+
+      for (let i = 0; i < 10; i++) {
         const q = (min + max) / 2;
-        out = await imageCompression(item.file, { initialQuality: q, useWebWorker: true });
-        if (out.size > targetBytes) max = q; else min = q;
+        out = await imageCompression(item.file, {
+          alwaysKeepResolution: true,
+          fileType: item.file.type || undefined,
+          initialQuality: q,
+          maxIteration: 8,
+          maxSizeMB: targetKb / 1024,
+          useWebWorker: true,
+        });
+
+        if (out.size <= targetBytes) {
+          best = out;
+          min = q;
+        } else {
+          if (out.size < best.size) best = out;
+          max = q;
+        }
       }
-      results.push(out);
+
+      results.push(
+        new File([best], `compressed-${item.file.name}`, {
+          type: best.type || item.file.type,
+          lastModified: Date.now(),
+        })
+      );
     }
     setCompressed(results);
     setLoading(false);
@@ -128,10 +156,15 @@ export default function ImageCompressor() {
             </label>
             <input
               type="number"
+              min={20}
+              max={51200}
               value={targetSizeKB}
-              onChange={(e) => setTargetSizeKB(Number(e.target.value))}
+              onChange={(e) => setTargetSizeKB(clampTargetKb(Number(e.target.value)))}
               className="input"
             />
+            <p style={{ margin: ".35rem 0 0", fontSize: ".72rem", color: "#a09080" }}>
+              The compressor now uses this value as the maximum target per image when the browser can reach it.
+            </p>
           </div>
           <button className="btn" onClick={handleCompress} disabled={loading}>
             {loading ? "Compressing…" : "Compress Images"}

@@ -147,6 +147,73 @@ export class ConverterController {
   }
 
   // 🔐 PROTECT PDF
+  @Post('video-mp3')
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  async videoToMp3(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('bitrate') bitrate: string,
+    @Res() res: Response,
+  ) {
+    if (!file) throw new BadRequestException('File not uploaded');
+
+    const result = await this.converterService.videoToMp3(file.path, bitrate);
+
+    res.set({
+      'Content-Type': 'audio/mpeg',
+      'Content-Disposition': 'attachment; filename=converted.mp3',
+    });
+
+    res.send(result);
+  }
+
+  @Post('video-compress')
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  async videoCompress(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('preset') preset: string,
+    @Body('resolution') resolution: string,
+    @Res() res: Response,
+  ) {
+    if (!file) throw new BadRequestException('File not uploaded');
+
+    const result = await this.converterService.compressVideo(
+      file.path,
+      preset,
+      resolution,
+    );
+
+    res.set({
+      'Content-Type': 'video/mp4',
+      'Content-Disposition': 'attachment; filename=compressed.mp4',
+    });
+
+    res.send(result);
+  }
+
+  @Post('video-cut')
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  async videoCut(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('startTime') startTime: string,
+    @Body('endTime') endTime: string,
+    @Res() res: Response,
+  ) {
+    if (!file) throw new BadRequestException('File not uploaded');
+
+    const result = await this.converterService.cutVideo(
+      file.path,
+      startTime,
+      endTime,
+    );
+
+    res.set({
+      'Content-Type': 'video/mp4',
+      'Content-Disposition': 'attachment; filename=clip.mp4',
+    });
+
+    res.send(result);
+  }
+
   @Post('pdf-protect')
   @UseInterceptors(FileInterceptor('file', multerConfig))
   async pdfProtect(

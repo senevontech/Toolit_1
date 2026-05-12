@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import { Download, ExternalLink, Image as ImageIcon, Search } from "lucide-react";
+import { downloadFile } from "@/lib/downloadUtils";
 
 type ThumbnailOption = {
   key: string;
@@ -54,6 +55,7 @@ function extractYouTubeVideoId(value: string) {
 export default function ThumbnailDownloaderYouTube() {
   const [input, setInput] = useState("");
   const [submitted, setSubmitted] = useState("");
+  const [downloadError, setDownloadError] = useState("");
 
   const videoId = useMemo(() => extractYouTubeVideoId(submitted), [submitted]);
   const thumbnails = useMemo(
@@ -69,6 +71,23 @@ export default function ThumbnailDownloaderYouTube() {
 
   const hasInput = submitted.trim().length > 0;
   const hasError = hasInput && !videoId;
+
+  const downloadThumbnail = async (url: string, label: string) => {
+    setDownloadError("");
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Could not fetch thumbnail.");
+      const blob = await response.blob();
+      downloadFile(
+        new File([blob], `${videoId}-${label.toLowerCase().replace(/\s+/g, "-")}.jpg`, {
+          type: blob.type || "image/jpeg",
+        })
+      );
+    } catch {
+      setDownloadError("Could not download this thumbnail directly. Use Open, then save the image from the browser.");
+    }
+  };
 
   return (
     <div className="tool-container">
@@ -119,6 +138,12 @@ export default function ThumbnailDownloaderYouTube() {
               Video ID detected: <span className="font-bold">{videoId}</span>
             </div>
           ) : null}
+
+          {downloadError ? (
+            <div className="mt-4 rounded-2xl bg-red-500/10 px-4 py-3 text-sm font-medium text-red-300">
+              {downloadError}
+            </div>
+          ) : null}
         </section>
 
         {videoId ? (
@@ -159,10 +184,14 @@ export default function ThumbnailDownloaderYouTube() {
                       <ExternalLink size={15} />
                       Open
                     </a>
-                    <a href={thumbnail.url} download className="btn">
+                    <button
+                      type="button"
+                      className="btn"
+                      onClick={() => downloadThumbnail(thumbnail.url, thumbnail.label)}
+                    >
                       <Download size={15} />
                       Download
-                    </a>
+                    </button>
                   </div>
                 </article>
               ))}

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { categories, tools } from "@/lib/tools";
+import { getSavedThemeMode, type ThemeMode } from "@/components/theme/themeModes";
 import type { ToolCategory } from "@/types/tool.types";
 
 function isToolCategory(value: string): value is ToolCategory {
@@ -95,6 +96,7 @@ export default function ToolStudioClient() {
   const requestedCategory = searchParams.get("category");
   const [activeCategory, setActiveCategory] = useState<string>(categories[0] ?? "");
   const [search, setSearch] = useState("");
+  const [themeMode, setThemeMode] = useState<ThemeMode>("night");
   const deferredSearch = useDeferredValue(search);
 
   useEffect(() => {
@@ -102,6 +104,17 @@ export default function ToolStudioClient() {
       setActiveCategory(requestedCategory);
     }
   }, [requestedCategory]);
+
+  useEffect(() => {
+    setThemeMode(getSavedThemeMode());
+
+    const handleThemeModeChange = (event: Event) => {
+      setThemeMode((event as CustomEvent<ThemeMode>).detail);
+    };
+
+    window.addEventListener("nm-theme-mode-change", handleThemeModeChange);
+    return () => window.removeEventListener("nm-theme-mode-change", handleThemeModeChange);
+  }, []);
 
   const toolCounts = useMemo(
     () =>
@@ -137,7 +150,7 @@ export default function ToolStudioClient() {
 
   return (
     <div
-      data-studio-theme="dark"
+      data-studio-theme={themeMode === "day" ? "light" : "dark"}
       className="studio-page studio-browser-page"
       style={pageStyle}
     >

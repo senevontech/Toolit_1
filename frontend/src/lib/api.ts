@@ -4,24 +4,27 @@ export const API_URL =
   rawApiUrl && rawApiUrl.length > 0
     ? rawApiUrl.replace(/\/$/, "")
     : process.env.NODE_ENV === "development"
-      ? "http://localhost:5000"
+      ? "http://127.0.0.1:5000"
       : "";
+
+export function apiEndpoint(endpoint: string) {
+  const normalizedEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  return `${API_URL}${normalizedEndpoint}`;
+}
 
 export async function convertFile(
   endpoint: string,
   file: File,
-  downloadName: string
+  downloadName: string,
+  fields: Record<string, string> = {}
 ) {
-  if (!API_URL) {
-    throw new Error(
-      "Frontend is missing NEXT_PUBLIC_API_URL. Set it before deploying."
-    );
-  }
-
   const formData = new FormData();
   formData.append("file", file);
+  Object.entries(fields).forEach(([key, value]) => {
+    formData.append(key, value);
+  });
 
-  const res = await fetch(`${API_URL}${endpoint}`, {
+  const res = await fetch(apiEndpoint(endpoint), {
     method: "POST",
     body: formData
   });
@@ -38,8 +41,10 @@ export async function convertFile(
   const a = document.createElement("a");
   a.href = url;
   a.download = downloadName;
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
 async function getErrorMessage(res: Response): Promise<string> {

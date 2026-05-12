@@ -2,41 +2,62 @@
 
 import { useState } from "react";
 import { PDFDocument, StandardFonts } from "pdf-lib";
+import { downloadFile } from "@/lib/downloadUtils";
 
 export default function TXTToPDF() {
   const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const convert = async () => {
     if (!file) return;
 
-    const text = await file.text();
+    setLoading(true);
+    setError("");
 
-    const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([600, 800]);
+    try {
+      const text = await file.text();
+      const lines = text
+        .replace(/\r\n/g, "\n")
+        .split("\n")
+        .flatMap((line) => line.match(/.{1,86}/g) ?? [""]);
 
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      const pdfDoc = await PDFDocument.create();
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      const fontSize = 11;
+      const lineHeight = 15;
+      const margin = 50;
+      let page = pdfDoc.addPage([612, 792]);
+      let y = page.getHeight() - margin;
 
-    page.drawText(text.slice(0, 4000), {
-      x: 50,
-      y: 750,
-      size: 12,
-      font,
-      lineHeight: 14,
-    });
+      for (const line of lines) {
+        if (y < margin) {
+          page = pdfDoc.addPage([612, 792]);
+          y = page.getHeight() - margin;
+        }
 
-    const pdfBytes = await pdfDoc.save();
+        page.drawText(line || " ", {
+          x: margin,
+          y,
+          size: fontSize,
+          font,
+          lineHeight,
+        });
+        y -= lineHeight;
+      }
 
-    // FIX: convert to Uint8Array for Blob
-    const blob = new Blob([new Uint8Array(pdfBytes)], {
-      type: "application/pdf",
-    });
+      const pdfBytes = await pdfDoc.save();
 
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "converted.pdf";
-    a.click();
+      downloadFile(
+        new File([new Uint8Array(pdfBytes)], "converted.pdf", {
+          type: "application/pdf",
+        })
+      );
+    } catch {
+      setError("Could not convert this TXT file.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -49,10 +70,13 @@ export default function TXTToPDF() {
 
       <button
         onClick={convert}
-        className="mt-4 bg-blue-500 text-white px-4 py-2"
+        disabled={!file || loading}
+        className="mt-4 bg-blue-500 text-white px-4 py-2 disabled:opacity-50"
       >
-        Convert to PDF
+        {loading ? "Converting..." : "Convert to PDF"}
       </button>
+
+      {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
     </div>
   );
 }

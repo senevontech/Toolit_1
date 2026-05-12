@@ -8,6 +8,7 @@ import { Zap, Home } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 import LoadingCurtain from "@/components/layout/LoadingCurtain";
 import ThemeBoot from "@/components/theme/ThemeBoot";
+import ThemeModeToggle from "@/components/theme/ThemeModeToggle";
 import { categories } from "@/lib/tools";
 import {
   defaultDescription,
@@ -113,24 +114,28 @@ export default function RootLayout({
               />
             </Link>
 
-            <nav className="hidden items-center gap-2 lg:flex">
-              <Link href="/" className="btn-ghost navbar-link">
-                Home
-              </Link>
-              <Link href="/tools" className="btn btn-sm ml-1">
-                <Zap size={13} className="fill-white" />
-                All Tools
-              </Link>
-            </nav>
+            <div className="flex items-center gap-2">
+              <nav className="hidden items-center gap-2 lg:flex">
+                <Link href="/" className="btn-ghost navbar-link">
+                  Home
+                </Link>
+                <Link href="/tools" className="btn btn-sm ml-1">
+                  <Zap size={13} className="fill-white" />
+                  All Tools
+                </Link>
+              </nav>
 
-            {/* Mobile-only home button */}
-            <Link
-              href="/"
-              aria-label="Go to Home"
-              className="mobile-home-btn lg:hidden"
-            >
-              <Home size={16} strokeWidth={2.2} />
-            </Link>
+              <ThemeModeToggle />
+
+              {/* Mobile-only home button */}
+              <Link
+                href="/"
+                aria-label="Go to Home"
+                className="mobile-home-btn lg:hidden"
+              >
+                <Home size={16} strokeWidth={2.2} />
+              </Link>
+            </div>
           </div>
 
           <nav className="site-category-strip" aria-label="Tool categories">

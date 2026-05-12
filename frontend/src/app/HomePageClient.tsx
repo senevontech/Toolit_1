@@ -18,6 +18,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { tools } from "@/lib/tools";
+import { getSavedThemeMode, type ThemeMode } from "@/components/theme/themeModes";
 import "./home2.css";
 
 type CategoryKey =
@@ -268,6 +269,7 @@ export default function Home() {
   const [rgb, setRgb] = useState<RGBColor>(INITIAL_RGB);
   const [isThemeMeterOpen, setIsThemeMeterOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [themeMode, setThemeMode] = useState<ThemeMode>("night");
 
   const primaryFeaturedTools = useMemo(
     () => tools.filter((t) => FEATURED_PRIMARY_SLUGS.includes(t.slug)),
@@ -295,6 +297,71 @@ export default function Home() {
   const isSearching = search.trim().length > 0;
   const activeTheme = useMemo(() => {
     const accent = rgb;
+    const { saturation } = rgbToHsl(accent);
+    const brightness = Math.max(accent.red, accent.green, accent.blue) / 255;
+    const meterValue = Math.round((saturation * 0.72 + brightness * 0.28) * 100);
+
+    if (themeMode === "day") {
+      const lightBgBase: RGBColor = { red: 244, green: 240, blue: 232 };
+      const lightSurfaceBase: RGBColor = { red: 255, green: 250, blue: 242 };
+      const warmShadowBase: RGBColor = { red: 161, green: 143, blue: 121 };
+      const warmShadowStrongBase: RGBColor = { red: 138, green: 117, blue: 92 };
+
+      const bg = mixRgb(lightBgBase, accent, 0.045);
+      const surface = mixRgb(lightSurfaceBase, accent, 0.035);
+      const text = improveContrast(DARK_TEXT_RGB, bg, DARK_BASE_RGB, 7.5);
+      const textMuted = improveContrast(
+        { red: 111, green: 98, blue: 84 },
+        bg,
+        DARK_BASE_RGB,
+        4.6
+      );
+      const accentDark = mixRgb(accent, DARK_BASE_RGB, 0.24);
+      const accentInk = improveContrast(
+        mixRgb(accent, DARK_BASE_RGB, 0.38),
+        bg,
+        DARK_BASE_RGB,
+        4.5
+      );
+      const onAccent = pickContrastColor(accent, DARK_TEXT_RGB, WHITE_RGB);
+      const footerText = text;
+      const footerTextMuted = rgbaString(footerText, 0.72);
+      const footerTextSoft = rgbaString(footerText, 0.52);
+      const footerBorder = rgbaString(footerText, 0.1);
+      const shadowDark = mixRgb(warmShadowBase, accent, 0.08);
+      const shadowDarkStrong = mixRgb(warmShadowStrongBase, accent, 0.1);
+      const shadowLight = WHITE_RGB;
+
+      return {
+        accent,
+        accentDark,
+        accentInk,
+        bg,
+        surface,
+        text,
+        textMuted,
+        onAccent,
+        onAccentMuted: rgbaString(onAccent, isSameRgb(onAccent, WHITE_RGB) ? 0.9 : 0.78),
+        accentShadowDark: mixRgb(accent, DARK_BASE_RGB, 0.48),
+        accentShadowLight: mixRgb(accent, WHITE_RGB, 0.42),
+        shadowDark,
+        shadowDarkStrong,
+        shadowLight,
+        meterValue,
+        accentHex: rgbToHex(accent),
+        glow: rgbaString(accent, 0.1),
+        glowSoft: rgbaString(accent, 0.05),
+        glowStrong: rgbaString(accent, 0.18),
+        accentSoft: rgbaString(accent, 0.12),
+        accentSurface: rgbaString(accent, 0.16),
+        footerBg: `linear-gradient(180deg, ${rgbString(surface)}, ${rgbString(bg)})`,
+        footerText,
+        footerTextMuted,
+        footerTextSoft,
+        footerBorder,
+      };
+    }
+
     const accentDark = mixRgb(accent, DARK_BASE_RGB, 0.18);
     const bg = mixRgb(DARK_BASE_RGB, accent, 0.02);
     const surface = mixRgb(SURFACE_BASE_RGB, accent, 0.035);
@@ -327,9 +394,6 @@ export default function Home() {
     const shadowDark = mixRgb(bg, BASE_SHADOW_RGB, 0.6);
     const shadowDarkStrong = mixRgb(bg, BASE_SHADOW_STRONG_RGB, 0.76);
     const shadowLight = mixRgb(surface, WHITE_RGB, 0.18);
-    const { saturation } = rgbToHsl(accent);
-    const brightness = Math.max(accent.red, accent.green, accent.blue) / 255;
-    const meterValue = Math.round((saturation * 0.72 + brightness * 0.28) * 100);
 
     return {
       accent,
@@ -361,7 +425,7 @@ export default function Home() {
       footerTextSoft,
       footerBorder,
     };
-  }, [rgb]);
+  }, [rgb, themeMode]);
   const pageThemeStyle = useMemo(
     () =>
       ({
@@ -398,6 +462,17 @@ export default function Home() {
       }) as CSSProperties,
     [activeTheme]
   );
+
+  useEffect(() => {
+    setThemeMode(getSavedThemeMode());
+
+    const handleThemeModeChange = (event: Event) => {
+      setThemeMode((event as CustomEvent<ThemeMode>).detail);
+    };
+
+    window.addEventListener("nm-theme-mode-change", handleThemeModeChange);
+    return () => window.removeEventListener("nm-theme-mode-change", handleThemeModeChange);
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -459,7 +534,7 @@ export default function Home() {
   };
 
   return (
-    <div className="nm-page" style={pageThemeStyle}>
+    <div className="nm-page" data-theme-mode={themeMode} style={pageThemeStyle}>
       {/* ── HERO ── */}
       <section className="nm-hero">
         <div className="nm-hero-inner">

@@ -8,9 +8,47 @@ const canvasToBlob = (canvas: HTMLCanvasElement, type: string, quality?: number)
     canvas.toBlob((blob) => resolve(blob), type, quality);
   });
 
+const getPdfImageObject = (page: any, name: string) =>
+  new Promise<any>((resolve) => {
+    try {
+      page.objs.get(name, resolve);
+    } catch {
+      resolve(null);
+    }
+  });
+
+const imageObjectToCanvas = (image: any) => {
+  if (!image?.width || !image?.height || !image?.data) return null;
+
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+
+  canvas.width = image.width;
+  canvas.height = image.height;
+
+  if (image instanceof ImageData) {
+    ctx.putImageData(image, 0, 0);
+    return canvas;
+  }
+
+  const raw = image.data as Uint8ClampedArray | Uint8Array;
+  const rgba = new Uint8ClampedArray(image.width * image.height * 4);
+  const components = raw.length / (image.width * image.height);
+
+  for (let i = 0, j = 0; i < rgba.length; i += 4, j += components) {
+    rgba[i] = raw[j] ?? 0;
+    rgba[i + 1] = raw[j + 1] ?? raw[j] ?? 0;
+    rgba[i + 2] = raw[j + 2] ?? raw[j] ?? 0;
+    rgba[i + 3] = components >= 4 ? raw[j + 3] ?? 255 : 255;
+  }
+
+  ctx.putImageData(new ImageData(rgba, image.width, image.height), 0, 0);
+  return canvas;
+};
+
 export default function ExtractImagesFromPDF() {
   const [file, setFile] = useState<File | null>(null);
-  const [scale, setScale] = useState(1.5);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,28 +68,44 @@ export default function ExtractImagesFromPDF() {
 
       const pdf = await pdfjs.getDocument({ data: await file.arrayBuffer() }).promise;
       const outputs: File[] = [];
+      const imageOps = new Set([
+        pdfjs.OPS.paintImageXObject,
+        pdfjs.OPS.paintJpegXObject,
+        pdfjs.OPS.paintInlineImageXObject,
+      ]);
 
       for (let i = 1; i <= pdf.numPages; i += 1) {
         const page = await pdf.getPage(i);
-        const viewport = page.getViewport({ scale });
+        const operatorList = await page.getOperatorList();
+        let pageImageNumber = 1;
 
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        if (!ctx) throw new Error("Canvas not available");
+        for (let opIndex = 0; opIndex < operatorList.fnArray.length; opIndex += 1) {
+          if (!imageOps.has(operatorList.fnArray[opIndex])) continue;
 
-        canvas.width = Math.floor(viewport.width);
-        canvas.height = Math.floor(viewport.height);
+          const imageName = operatorList.argsArray[opIndex]?.[0];
+          const image =
+            typeof imageName === "string"
+              ? await getPdfImageObject(page, imageName)
+              : imageName;
+          const canvas = imageObjectToCanvas(image);
+          if (!canvas) continue;
 
-        await page.render({ canvasContext: ctx, viewport, canvas }).promise;
+          const blob = await canvasToBlob(canvas, "image/png");
+          if (!blob) continue;
 
-        const blob = await canvasToBlob(canvas, "image/png");
-        if (!blob) continue;
-
-        outputs.push(new File([blob], `${file.name.replace(/\.pdf$/i, "")}-image-${i}.png`, { type: "image/png" }));
+          outputs.push(
+            new File(
+              [blob],
+              `${file.name.replace(/\.pdf$/i, "")}-page-${i}-image-${pageImageNumber}.png`,
+              { type: "image/png" }
+            )
+          );
+          pageImageNumber += 1;
+        }
       }
 
       if (!outputs.length) {
-        setError("No images were generated from this PDF.");
+        setError("No embedded raster images were found. Use PDF to Images if you want full-page image exports.");
         return;
       }
 
@@ -66,22 +120,9 @@ export default function ExtractImagesFromPDF() {
   return (
     <div className="max-w-xl mx-auto bg-white p-6 rounded-xl shadow space-y-4">
       <h2 className="text-2xl font-bold text-orange-500">Extract Images from PDF</h2>
-      <p className="text-sm text-gray-600">This creates page images from your PDF and downloads them as PNG files.</p>
+      <p className="text-sm text-gray-600">This extracts embedded raster images only. It does not render every page.</p>
 
       <input type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-
-      <label className="block text-sm font-medium text-gray-700">
-        Quality scale: {scale.toFixed(1)}x
-        <input
-          type="range"
-          min={1}
-          max={2.5}
-          step={0.1}
-          value={scale}
-          onChange={(e) => setScale(Number(e.target.value))}
-          className="w-full"
-        />
-      </label>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
