@@ -8,15 +8,16 @@ import {
 
 import AllToolsClient from "../home2/AllToolsClient";
 
-
 export const metadata = buildMetadata({
   title: "All Tools",
   description:
-    "Browse every Toolmitra tool for PDFs, images, developer tasks, and calculators in one searchable catalog.",
+    "Browse every Toolmitra tool for PDFs, images, videos, SEO tasks, developer workflows, and calculators in one searchable catalog.",
   path: "/tools/",
   keywords: [
     "all online tools",
     "pdf and image tools",
+    "video tools online",
+    "seo tools online",
     "developer utilities",
     "online calculator tools",
   ],
@@ -30,7 +31,7 @@ export default function ToolsPage() {
           path: "/tools/",
           title: "Toolmitra Tools Directory",
           description:
-            "Search and browse Toolmitra tools for images, documents, developer workflows, and calculators.",
+            "Search and browse Toolmitra tools for images, documents, videos, SEO workflows, developer utilities, and calculators.",
           items: tools.map((tool) => ({
             name: tool.name,
             url: absoluteUrl(`/tools/${tool.slug}/`),
@@ -38,17 +39,17 @@ export default function ToolsPage() {
           })),
         })}
       />
-      <section className="px-4 pt-14 pb-10 md:px-8">
+      <section className="tools-directory-hero px-4 pb-10 pt-14 md:px-8">
         <div className="mx-auto max-w-5xl">
-          <span className="inline-block rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-violet-600">
+          <span className="tools-directory-hero__kicker inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest">
             Directory
           </span>
-          <h1 className="mt-4 text-5xl font-extrabold tracking-tight text-slate-900">
+          <h1 className="tools-directory-hero__title mt-4 text-5xl font-extrabold tracking-tight">
             All Tools
           </h1>
-          <p className="mt-3 max-w-xl text-base leading-relaxed text-slate-500">
+          <p className="tools-directory-hero__desc mt-3 max-w-xl text-base leading-relaxed">
             Browse every tool for image optimization, PDF workflows, developer
-            tasks, and calculators — all in one place.
+            tasks, and calculators all in one place.
           </p>
         </div>
       </section>

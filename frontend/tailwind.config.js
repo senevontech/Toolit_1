@@ -7,21 +7,21 @@ module.exports = {
     extend: {
       colors: {
         neu: {
-          bg:      "#e2e8f0",
-          surface: "#edf1f7",
-          dark:    "#d0d8e4",
+          bg:      "#020202",
+          surface: "#070707",
+          dark:    "#000000",
         },
         orange: {
-          50:  "#fff7ed",
-          100: "#ffedd5",
-          200: "#fed7aa",
-          300: "#fdba74",
-          400: "#fb923c",
-          500: "#f97316",
-          600: "#ea580c",
-          700: "#c2440a",
-          800: "#9a3412",
-          900: "#7c2d12",
+          50:  "#f8f8f8",
+          100: "#f1f1f1",
+          200: "#dbdbdb",
+          300: "#c4c4c4",
+          400: "#adadad",
+          500: "#f4f4f5",
+          600: "#d4d4d8",
+          700: "#a1a1aa",
+          800: "#71717a",
+          900: "#3f3f46",
         },
       },
       boxShadow: {
@@ -43,10 +43,10 @@ module.exports = {
           "inset 5px 5px 12px rgba(150,40,0,0.50), inset -3px -3px 8px rgba(255,160,80,0.28)",
       },
       backgroundImage: {
-        "neu-gradient":     "linear-gradient(145deg, #edf1f7, #d5dce8)",
-        "orange-metal":     "linear-gradient(145deg, #fb923c, #c2440a)",
-        "silver-metal":     "linear-gradient(145deg, #f0f4f9, #d0d8e4)",
-        "silver-metal-rev": "linear-gradient(145deg, #d0d8e4, #f0f4f9)",
+        "neu-gradient":     "linear-gradient(180deg, #0b0b0d, #020202)",
+        "orange-metal":     "linear-gradient(180deg, #f5f5f5, #d8d8dc)",
+        "silver-metal":     "linear-gradient(180deg, #0d0d10, #030304)",
+        "silver-metal-rev": "linear-gradient(180deg, #030304, #0d0d10)",
       },
       keyframes: {
         springIn: {

@@ -16,8 +16,10 @@ export default function AllToolsV2() {
   const categoryLabels: Record<string, string> = {
     "Image Tools": "Image Tools",
     "Document Tools": "Doc Tools",
+    "Video Tools": "Video Tools",
     "Developer Tools": "Dev tools",
-    Calculators: "Upcoming",
+    "SEO Tools": "SEO Tools",
+    Calculators: "Calculators",
   };
 
   const filteredTools = useMemo(() => {
@@ -79,7 +81,7 @@ export default function AllToolsV2() {
           </div>
 
           <div className="vl-tabs">
-            {categories.slice(0, 4).map((category) => (
+            {categories.map((category) => (
               <button
                 key={category}
                 className={`vl-tab ${

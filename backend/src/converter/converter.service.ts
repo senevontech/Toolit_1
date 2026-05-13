@@ -4,9 +4,10 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import * as fs from 'fs';
-import { basename, extname } from 'path';
-import { convertFile } from '../utils/libreoffice.util';
-import { convertPdfWithPython } from '../utils/python-converter.util';
+import * as os from 'os';
+import { spawn } from 'child_process';
+import { extname, join } from 'path';
+import { convertWithPython } from '../utils/python-converter.util';
 
 type ValidationOptions = {
   allowedExtensions: string[];
@@ -17,13 +18,14 @@ type ValidationOptions = {
 
 @Injectable()
 export class ConverterService {
+
   async pdfToWord(filePath: string): Promise<Buffer> {
     await this.validateUploadedFile(filePath, {
       allowedExtensions: ['.pdf'],
       allowedMimeTypes: ['application/pdf'],
       message: 'Please upload a valid PDF file.',
     });
-    return convertPdfWithPython('docx', filePath);
+    return convertWithPython('docx', filePath);
   }
 
   async pdfToExcel(filePath: string): Promise<Buffer> {
@@ -32,7 +34,7 @@ export class ConverterService {
       allowedMimeTypes: ['application/pdf'],
       message: 'Please upload a valid PDF file.',
     });
-    return convertPdfWithPython('xlsx', filePath);
+    return convertWithPython('xlsx', filePath);
   }
 
   async excelToPdf(filePath: string): Promise<Buffer> {
@@ -45,7 +47,7 @@ export class ConverterService {
       allowLegacyCfb: true,
       message: 'Please upload a valid Excel file (.xls or .xlsx).',
     });
-    return this.convert(filePath, 'pdf');
+    return convertWithPython('excel_pdf', filePath);
   }
 
   async pdfToPpt(filePath: string): Promise<Buffer> {
@@ -54,7 +56,7 @@ export class ConverterService {
       allowedMimeTypes: ['application/pdf'],
       message: 'Please upload a valid PDF file.',
     });
-    return convertPdfWithPython('pptx', filePath);
+    return convertWithPython('pptx', filePath);
   }
 
   async pptToPdf(filePath: string): Promise<Buffer> {
@@ -67,7 +69,7 @@ export class ConverterService {
       allowLegacyCfb: true,
       message: 'Please upload a valid PowerPoint file (.ppt or .pptx).',
     });
-    return this.convert(filePath, 'pdf');
+    return convertWithPython('ppt_pdf', filePath);
   }
 
   async wordToPdf(filePath: string): Promise<Buffer> {
@@ -80,7 +82,7 @@ export class ConverterService {
       allowLegacyCfb: true,
       message: 'Please upload a valid Word file (.doc or .docx).',
     });
-    return this.convert(filePath, 'pdf');
+    return convertWithPython('word_pdf', filePath);
   }
 
   async wordToHtml(filePath: string): Promise<Buffer> {
@@ -93,29 +95,133 @@ export class ConverterService {
       allowLegacyCfb: true,
       message: 'Please upload a valid Word file (.doc or .docx).',
     });
-    return this.convert(filePath, 'html');
+    return convertWithPython('word_html', filePath);
   }
 
-  private async convert(filePath: string, format: string): Promise<Buffer> {
+  async videoToMp3(filePath: string, bitrate = '192k'): Promise<Buffer> {
+    this.ensureExtension(
+      filePath,
+      ['.mp4', '.mov', '.m4v', '.webm', '.mkv', '.avi'],
+      'Please upload a video file.',
+    );
+
+    const safeBitrate = ['128k', '192k', '256k', '320k'].includes(bitrate)
+      ? bitrate
+      : '192k';
+    return this.convertWithFfmpeg(filePath, 'mp3', [
+      '-vn',
+      '-acodec',
+      'libmp3lame',
+      '-b:a',
+      safeBitrate,
+    ]);
+  }
+
+  async compressVideo(
+    filePath: string,
+    preset = 'balanced',
+    resolution = 'original',
+  ): Promise<Buffer> {
+    this.ensureExtension(
+      filePath,
+      ['.mp4', '.mov', '.m4v', '.webm', '.mkv', '.avi'],
+      'Please upload a video file.',
+    );
+
+    const crfByPreset: Record<string, string> = {
+      balanced: '25',
+      smaller: '30',
+      maximum: '34',
+    };
+    const scaleByResolution: Record<string, string | null> = {
+      original: null,
+      '1080p': 'scale=-2:1080',
+      '720p': 'scale=-2:720',
+      '480p': 'scale=-2:480',
+    };
+
+    const args = [
+      '-vcodec',
+      'libx264',
+      '-preset',
+      'medium',
+      '-crf',
+      crfByPreset[preset] ?? crfByPreset.balanced,
+      '-acodec',
+      'aac',
+      '-b:a',
+      '128k',
+      '-movflags',
+      '+faststart',
+    ];
+    const scale = scaleByResolution[resolution] ?? null;
+    if (scale) {
+      args.unshift('-vf', scale);
+    }
+
+    return this.convertWithFfmpeg(filePath, 'mp4', args);
+  }
+
+  async cutVideo(
+    filePath: string,
+    startTime: string,
+    endTime: string,
+  ): Promise<Buffer> {
+    this.ensureExtension(
+      filePath,
+      ['.mp4', '.mov', '.m4v', '.webm', '.mkv', '.avi'],
+      'Please upload a video file.',
+    );
+
+    if (!this.isValidTime(startTime) || !this.isValidTime(endTime)) {
+      this.rejectUnsupported(filePath, 'Start and end time are required.');
+    }
+
+    return this.convertWithFfmpeg(filePath, 'mp4', [
+      '-ss',
+      startTime,
+      '-to',
+      endTime,
+      '-vcodec',
+      'libx264',
+      '-acodec',
+      'aac',
+      '-movflags',
+      '+faststart',
+    ]);
+  }
+
+  // 🔐 PROTECT PDF
+  async pdfProtect(filePath: string, password: string): Promise<Buffer> {
+    this.ensureExtension(filePath, ['.pdf'], 'Please upload a PDF file.');
+
+    if (!password) {
+      this.rejectUnsupported(filePath, 'Password is required');
+    }
+
     try {
-
-      if (!fs.existsSync(filePath)) {
-        throw new Error('Uploaded file not found');
-      }
-
-      const buffer = fs.readFileSync(filePath);
-      const sourceFileName = basename(filePath);
-
-      const result = await convertFile(buffer, format, sourceFileName);
-
-      return result;
+      return await convertWithPython('protect', filePath, password);
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
+      console.error('PDF protect failed:', error);
+      throw new InternalServerErrorException('PDF protection failed');
+    } finally {
+      this.removeUploadedFile(filePath);
+    }
+  }
 
-      console.error('Conversion failed:', error);
-      throw new InternalServerErrorException('File conversion failed');
+  // 🔓 UNLOCK PDF (🔥 THIS WAS MISSING)
+  async pdfUnlock(filePath: string, password: string): Promise<Buffer> {
+    this.ensureExtension(filePath, ['.pdf'], 'Please upload a PDF file.');
+
+    if (!password) {
+      this.rejectUnsupported(filePath, 'Password is required');
+    }
+
+    try {
+      return await convertWithPython('unlock', filePath, password);
+    } catch (error) {
+      console.error('PDF unlock failed:', error);
+      throw new InternalServerErrorException('PDF unlock failed');
     } finally {
       this.removeUploadedFile(filePath);
     }
@@ -169,5 +275,71 @@ export class ConverterService {
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
+  }
+
+  private convertWithFfmpeg(
+    inputFilePath: string,
+    outputExtension: string,
+    args: string[],
+  ): Promise<Buffer> {
+    const outputFilePath = join(
+      os.tmpdir(),
+      `converted_${Date.now()}_${Math.round(Math.random() * 1e9)}.${outputExtension}`,
+    );
+
+    return new Promise((resolve, reject) => {
+      const ffmpeg = spawn('ffmpeg', [
+        '-y',
+        '-i',
+        inputFilePath,
+        ...args,
+        outputFilePath,
+      ]);
+
+      let stderr = '';
+      ffmpeg.stderr.on('data', (data: Buffer) => {
+        stderr += data.toString();
+      });
+
+      ffmpeg.on('error', (error: Error) => {
+        this.removeUploadedFile(inputFilePath);
+        reject(
+          new InternalServerErrorException(
+            `FFmpeg is not installed or not available in PATH. ${error.message}`,
+          ),
+        );
+      });
+
+      ffmpeg.on('close', (code: number) => {
+        this.removeUploadedFile(inputFilePath);
+
+        if (code !== 0) {
+          this.removeUploadedFile(outputFilePath);
+          reject(
+            new InternalServerErrorException(
+              `Video conversion failed. ${stderr || 'FFmpeg returned an error.'}`,
+            ),
+          );
+          return;
+        }
+
+        if (!fs.existsSync(outputFilePath)) {
+          reject(new InternalServerErrorException('Output file not generated.'));
+          return;
+        }
+
+        try {
+          const buffer = fs.readFileSync(outputFilePath);
+          this.removeUploadedFile(outputFilePath);
+          resolve(buffer);
+        } catch (error) {
+          reject(error);
+        }
+      });
+    });
+  }
+
+  private isValidTime(value: string): boolean {
+    return /^\d+(\.\d+)?$/.test(value) || /^\d{1,2}:\d{2}(:\d{2})?(\.\d+)?$/.test(value);
   }
 }

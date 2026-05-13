@@ -9,21 +9,24 @@ type ConversionJobStatus =
   | { jobId: string; status: "completed"; downloadUrl: string; completedAt?: string }
   | { jobId: string; status: "failed"; error?: string };
 
+export function apiEndpoint(endpoint: string) {
+  const normalizedEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  return `${API_URL}${normalizedEndpoint}`;
+}
+
 export async function convertFile(
   endpoint: string,
   file: File,
-  downloadName: string
+  downloadName: string,
+  fields: Record<string, string> = {}
 ) {
-  if (!API_URL) {
-    throw new Error(
-      "Frontend is missing NEXT_PUBLIC_API_URL. Set it before deploying."
-    );
-  }
-
   const formData = new FormData();
   formData.append("file", file);
+  Object.entries(fields).forEach(([key, value]) => {
+    formData.append(key, value);
+  });
 
-  const res = await fetch(`${API_URL}${endpoint}`, {
+  const res = await fetch(apiEndpoint(endpoint), {
     method: "POST",
     body: formData
   });
@@ -53,8 +56,10 @@ export async function convertFile(
   const a = document.createElement("a");
   a.href = url;
   a.download = downloadName;
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
 async function waitForJob(jobId: string): Promise<ConversionJobStatus> {

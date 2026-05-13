@@ -10,6 +10,7 @@ import {
   Code2,
   QrCode,
   Maximize2,
+  Video,
   SlidersHorizontal,
   X,
   Copy,
@@ -17,18 +18,23 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { tools } from "@/lib/tools";
+import { getSavedThemeMode, type ThemeMode } from "@/components/theme/themeModes";
 import "./home2.css";
 
 type CategoryKey =
   | "Image Tools"
   | "Document Tools"
+  | "Video Tools"
   | "Developer Tools"
+  | "SEO Tools"
   | "Calculators";
 
 const CATEGORY_LABEL: Record<CategoryKey, string> = {
   "Image Tools": "Image tool",
   "Document Tools": "Document tool",
+  "Video Tools": "Video tool",
   "Developer Tools": "Developer tool",
+  "SEO Tools": "SEO tool",
   Calculators: "Calculator tool",
 };
 
@@ -38,9 +44,22 @@ const TOOL_ICON: Record<string, LucideIcon> = {
   "png-jpg-converter": ImageIcon,
   "webp-converter": ImageIcon,
   "watermark-image": ImageIcon,
+  "image-background-blur": ImageIcon,
+  "image-sharpen-tool": ImageIcon,
+  "image-noise-reduction": ImageIcon,
+  "cartoon-effect-generator": ImageIcon,
+  "sketch-effect-generator": ImageIcon,
+  "background-remover": ImageIcon,
+  "passport-size-image-generator": ImageIcon,
   "merge-pdf": FilePlus2,
+  "pdf-compressor": FileText,
   "split-pdf": FilePlus2,
   "rotate-pdf": FileText,
+  "add-watermark-to-pdf": FileText,
+  "remove-pages-from-pdf": FileText,
+  "extract-images-from-pdf": FileText,
+  "pdf-to-images": FileText,
+  "add-page-numbers": FileText,
   "protect-pdf": FileText,
   "unlock-pdf": FileText,
   "pdf-to-word": FileText,
@@ -52,8 +71,26 @@ const TOOL_ICON: Record<string, LucideIcon> = {
   "pdf-to-txt": FileText,
   "txt-to-pdf": FileText,
   "word-to-html": FileText,
+  "video-to-mp3": Video,
+  "video-compressor": Video,
+  "video-cutter": Video,
+  "thumbnail-downloader-youtube": Video,
+  "html-formatter": Code2,
+  "css-formatter": Code2,
+  "js-formatter": Code2,
+  "sql-formatter": Code2,
+  "jwt-decoder": Code2,
+  "url-parser": Code2,
+  "regex-tester": Code2,
+  "timestamp-converter": Code2,
+  "domain-checker": Code2,
   "json-formatter": Code2,
   "qr-generator": QrCode,
+  "keyword-density-checker": Search,
+  "meta-tag-generator": Search,
+  "sitemap-generator": Search,
+  "robots-txt-generator": Search,
+  "og-generator": Search,
   "base64-tool": Code2,
 };
 
@@ -100,13 +137,42 @@ const RGB_SLIDERS = [
 ] as const;
 
 const WHITE_RGB: RGBColor = { red: 255, green: 255, blue: 255 };
+const DARK_BASE_RGB: RGBColor = { red: 2, green: 2, blue: 2 };
+const SURFACE_BASE_RGB: RGBColor = { red: 7, green: 7, blue: 7 };
 const DARK_TEXT_RGB: RGBColor = { red: 34, green: 31, blue: 40 };
-const BASE_TEXT_RGB: RGBColor = { red: 66, green: 58, blue: 72 };
-const BASE_SHADOW_RGB: RGBColor = { red: 144, green: 149, blue: 160 };
-const BASE_SHADOW_STRONG_RGB: RGBColor = { red: 112, green: 118, blue: 132 };
-const INITIAL_RGB: RGBColor = { red: 255, green: 178, blue: 134 };
+const LIGHT_TEXT_RGB: RGBColor = { red: 242, green: 242, blue: 247 };
+const BASE_TEXT_RGB: RGBColor = { red: 150, green: 150, blue: 160 };
+const BASE_SHADOW_RGB: RGBColor = { red: 0, green: 0, blue: 0 };
+const BASE_SHADOW_STRONG_RGB: RGBColor = { red: 0, green: 0, blue: 0 };
+const INITIAL_RGB: RGBColor = { red: 244, green: 244, blue: 245 };
 
 const clampChannel = (value: number) => Math.max(0, Math.min(255, Math.round(value)));
+
+const parseStoredRgb = (value: string | undefined): RGBColor | null => {
+  if (!value) return null;
+
+  const rgbMatch = value.match(
+    /rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(?:\s*,\s*[\d.]+\s*)?\)/
+  );
+  if (rgbMatch) {
+    return {
+      red: clampChannel(Number(rgbMatch[1])),
+      green: clampChannel(Number(rgbMatch[2])),
+      blue: clampChannel(Number(rgbMatch[3])),
+    };
+  }
+
+  const hex = value.trim().replace("#", "");
+  if (hex.length === 6 && /^[\da-fA-F]{6}$/.test(hex)) {
+    return {
+      red: clampChannel(parseInt(hex.slice(0, 2), 16)),
+      green: clampChannel(parseInt(hex.slice(2, 4), 16)),
+      blue: clampChannel(parseInt(hex.slice(4, 6), 16)),
+    };
+  }
+
+  return null;
+};
 
 const mixRgb = (base: RGBColor, target: RGBColor, amount: number): RGBColor => ({
   red: clampChannel(base.red + (target.red - base.red) * amount),
@@ -236,6 +302,8 @@ export default function Home() {
   const [rgb, setRgb] = useState<RGBColor>(INITIAL_RGB);
   const [isThemeMeterOpen, setIsThemeMeterOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [themeMode, setThemeMode] = useState<ThemeMode>("night");
+  const [hasRestoredTheme, setHasRestoredTheme] = useState(false);
 
   const primaryFeaturedTools = useMemo(
     () => tools.filter((t) => FEATURED_PRIMARY_SLUGS.includes(t.slug)),
@@ -263,27 +331,103 @@ export default function Home() {
   const isSearching = search.trim().length > 0;
   const activeTheme = useMemo(() => {
     const accent = rgb;
-    const accentDark = mixRgb(accent, { red: 28, green: 30, blue: 38 }, 0.26);
-    const bg = mixRgb(accent, WHITE_RGB, 0.9);
-    const surface = mixRgb(accent, WHITE_RGB, 0.94);
-    const textBase = mixRgb(BASE_TEXT_RGB, accent, 0.16);
-    const text = improveContrast(textBase, bg, DARK_TEXT_RGB, 8.2);
-    const textMuted = improveContrast(mixRgb(text, bg, 0.32), bg, text, 4.6);
-    const accentInk = improveContrast(mixRgb(accent, DARK_TEXT_RGB, 0.18), bg, DARK_TEXT_RGB, 3.3);
-    const onAccent = pickContrastColor(accent);
-    const onAccentMuted = rgbaString(onAccent, isSameRgb(onAccent, WHITE_RGB) ? 0.88 : 0.72);
-    const footerText = pickContrastColor(accentDark);
-    const footerTextMuted = rgbaString(footerText, isSameRgb(footerText, WHITE_RGB) ? 0.78 : 0.68);
-    const footerTextSoft = rgbaString(footerText, isSameRgb(footerText, WHITE_RGB) ? 0.58 : 0.52);
-    const footerBorder = rgbaString(footerText, isSameRgb(footerText, WHITE_RGB) ? 0.16 : 0.12);
-    const accentShadowDark = mixRgb(accent, { red: 18, green: 20, blue: 28 }, 0.44);
-    const accentShadowLight = mixRgb(accent, WHITE_RGB, 0.52);
-    const shadowDark = mixRgb(bg, BASE_SHADOW_RGB, 0.28);
-    const shadowDarkStrong = mixRgb(bg, BASE_SHADOW_STRONG_RGB, 0.4);
-    const shadowLight = WHITE_RGB;
     const { saturation } = rgbToHsl(accent);
     const brightness = Math.max(accent.red, accent.green, accent.blue) / 255;
     const meterValue = Math.round((saturation * 0.72 + brightness * 0.28) * 100);
+
+    if (themeMode === "day") {
+      const lightBgBase: RGBColor = { red: 244, green: 240, blue: 232 };
+      const lightSurfaceBase: RGBColor = { red: 255, green: 250, blue: 242 };
+      const warmShadowBase: RGBColor = { red: 161, green: 143, blue: 121 };
+      const warmShadowStrongBase: RGBColor = { red: 138, green: 117, blue: 92 };
+
+      const bg = mixRgb(lightBgBase, accent, 0.045);
+      const surface = mixRgb(lightSurfaceBase, accent, 0.035);
+      const text = improveContrast(DARK_TEXT_RGB, bg, DARK_BASE_RGB, 7.5);
+      const textMuted = improveContrast(
+        { red: 111, green: 98, blue: 84 },
+        bg,
+        DARK_BASE_RGB,
+        4.6
+      );
+      const accentDark = mixRgb(accent, DARK_BASE_RGB, 0.24);
+      const accentInk = improveContrast(
+        mixRgb(accent, DARK_BASE_RGB, 0.38),
+        bg,
+        DARK_BASE_RGB,
+        4.5
+      );
+      const onAccent = pickContrastColor(accent, DARK_TEXT_RGB, WHITE_RGB);
+      const footerText = text;
+      const footerTextMuted = rgbaString(footerText, 0.72);
+      const footerTextSoft = rgbaString(footerText, 0.52);
+      const footerBorder = rgbaString(footerText, 0.1);
+      const shadowDark = mixRgb(warmShadowBase, accent, 0.08);
+      const shadowDarkStrong = mixRgb(warmShadowStrongBase, accent, 0.1);
+      const shadowLight = WHITE_RGB;
+
+      return {
+        accent,
+        accentDark,
+        accentInk,
+        bg,
+        surface,
+        text,
+        textMuted,
+        onAccent,
+        onAccentMuted: rgbaString(onAccent, isSameRgb(onAccent, WHITE_RGB) ? 0.9 : 0.78),
+        accentShadowDark: mixRgb(accent, DARK_BASE_RGB, 0.48),
+        accentShadowLight: mixRgb(accent, WHITE_RGB, 0.42),
+        shadowDark,
+        shadowDarkStrong,
+        shadowLight,
+        meterValue,
+        accentHex: rgbToHex(accent),
+        glow: rgbaString(accent, 0.1),
+        glowSoft: rgbaString(accent, 0.05),
+        glowStrong: rgbaString(accent, 0.18),
+        accentSoft: rgbaString(accent, 0.12),
+        accentSurface: rgbaString(accent, 0.16),
+        footerBg: `linear-gradient(180deg, ${rgbString(surface)}, ${rgbString(bg)})`,
+        footerText,
+        footerTextMuted,
+        footerTextSoft,
+        footerBorder,
+      };
+    }
+
+    const accentDark = mixRgb(accent, DARK_BASE_RGB, 0.18);
+    const bg = mixRgb(DARK_BASE_RGB, accent, 0.02);
+    const surface = mixRgb(SURFACE_BASE_RGB, accent, 0.035);
+    const text = improveContrast(
+      mixRgb(LIGHT_TEXT_RGB, accent, 0.015),
+      bg,
+      WHITE_RGB,
+      9.2
+    );
+    const textMuted = improveContrast(
+      mixRgb(BASE_TEXT_RGB, bg, 0.08),
+      bg,
+      text,
+      4.6
+    );
+    const accentInk = improveContrast(
+      mixRgb(accent, WHITE_RGB, 0.16),
+      bg,
+      WHITE_RGB,
+      3.3
+    );
+    const onAccent = pickContrastColor(accent, DARK_TEXT_RGB, WHITE_RGB);
+    const onAccentMuted = rgbaString(onAccent, isSameRgb(onAccent, WHITE_RGB) ? 0.88 : 0.72);
+    const footerText = WHITE_RGB;
+    const footerTextMuted = rgbaString(footerText, 0.78);
+    const footerTextSoft = rgbaString(footerText, 0.58);
+    const footerBorder = rgbaString(footerText, 0.16);
+    const accentShadowDark = mixRgb(accent, BASE_SHADOW_STRONG_RGB, 0.62);
+    const accentShadowLight = mixRgb(accent, WHITE_RGB, 0.1);
+    const shadowDark = mixRgb(bg, BASE_SHADOW_RGB, 0.6);
+    const shadowDarkStrong = mixRgb(bg, BASE_SHADOW_STRONG_RGB, 0.76);
+    const shadowLight = mixRgb(surface, WHITE_RGB, 0.09);
 
     return {
       accent,
@@ -302,18 +446,20 @@ export default function Home() {
       shadowLight,
       meterValue,
       accentHex: rgbToHex(accent),
-      glow: rgbaString(accent, 0.2),
-      glowSoft: rgbaString(accent, 0.12),
-      glowStrong: rgbaString(accent, 0.3),
-      accentSoft: rgbaString(accent, 0.1),
-      accentSurface: rgbaString(accent, 0.18),
-      footerBg: rgbString(accentDark),
+      glow: rgbaString(accent, 0.05),
+      glowSoft: rgbaString(accent, 0.025),
+      glowStrong: rgbaString(accent, 0.08),
+      accentSoft: rgbaString(accent, 0.05),
+      accentSurface: rgbaString(accent, 0.08),
+      footerBg: `linear-gradient(180deg, ${rgbString(mixRgb(DARK_BASE_RGB, accent, 0.03))}, ${rgbString(
+        mixRgb(DARK_BASE_RGB, BASE_SHADOW_STRONG_RGB, 0.12)
+      )})`,
       footerText,
       footerTextMuted,
       footerTextSoft,
       footerBorder,
     };
-  }, [rgb]);
+  }, [rgb, themeMode]);
   const pageThemeStyle = useMemo(
     () =>
       ({
@@ -334,12 +480,12 @@ export default function Home() {
         "--nm-shadow-dark-color": rgbString(activeTheme.shadowDark),
         "--nm-shadow-dark-strong-color": rgbString(activeTheme.shadowDarkStrong),
         "--nm-shadow-light-color": rgbString(activeTheme.shadowLight),
-        "--nm-shadow-out": `8px 8px 18px ${rgbString(activeTheme.shadowDark)}, -8px -8px 18px ${rgbString(activeTheme.shadowLight)}`,
-        "--nm-shadow-in": `inset 5px 5px 12px ${rgbString(activeTheme.shadowDark)}, inset -5px -5px 12px ${rgbString(activeTheme.shadowLight)}`,
-        "--nm-shadow-lg": `14px 14px 30px ${rgbString(activeTheme.shadowDarkStrong)}, -14px -14px 30px ${rgbString(activeTheme.shadowLight)}`,
-        "--nm-shadow-hover": `10px 10px 22px ${rgbString(activeTheme.shadowDarkStrong)}, -10px -10px 22px ${rgbString(activeTheme.shadowLight)}`,
-        "--nm-shadow-press": `inset 4px 4px 10px ${rgbString(activeTheme.shadowDarkStrong)}, inset -4px -4px 10px ${rgbString(activeTheme.shadowLight)}`,
-        "--nm-shadow-accent-press": `inset 6px 6px 14px ${rgbaString(activeTheme.accentShadowDark, 0.84)}, inset -6px -6px 14px ${rgbaString(activeTheme.accentShadowLight, 0.92)}`,
+        "--nm-shadow-out": `0 0 0 1px ${rgbaString(activeTheme.shadowLight, 0.08)}, 0 18px 46px ${rgbaString(activeTheme.shadowDark, 0.82)}`,
+        "--nm-shadow-in": `inset 0 0 0 1px ${rgbaString(activeTheme.shadowLight, 0.04)}, inset 0 12px 24px ${rgbaString(activeTheme.shadowLight, 0.015)}, inset 0 -18px 28px ${rgbaString(activeTheme.shadowDarkStrong, 0.62)}`,
+        "--nm-shadow-lg": `0 0 0 1px ${rgbaString(activeTheme.shadowLight, 0.08)}, 0 24px 64px ${rgbaString(activeTheme.shadowDarkStrong, 0.86)}`,
+        "--nm-shadow-hover": `0 0 0 1px ${rgbaString(activeTheme.shadowLight, 0.1)}, 0 22px 56px ${rgbaString(activeTheme.shadowDarkStrong, 0.82)}`,
+        "--nm-shadow-press": `inset 0 0 0 1px ${rgbaString(activeTheme.shadowLight, 0.04)}, inset 0 18px 30px ${rgbaString(activeTheme.shadowDarkStrong, 0.74)}`,
+        "--nm-shadow-accent-press": `inset 0 0 0 1px ${rgbaString(activeTheme.accentShadowLight, 0.12)}, inset 0 14px 28px ${rgbaString(activeTheme.accentShadowDark, 0.22)}, 0 0 24px ${rgbaString(activeTheme.accent, 0.04)}`,
         "--nm-meter-color": rgbString(activeTheme.accent),
         "--nm-meter-glow": activeTheme.glowStrong,
         "--nm-footer-bg": activeTheme.footerBg,
@@ -352,6 +498,37 @@ export default function Home() {
   );
 
   useEffect(() => {
+    const savedMode = getSavedThemeMode();
+    setThemeMode(savedMode);
+
+    try {
+      const saved = localStorage.getItem("nm-theme");
+      if (saved) {
+        const vars = JSON.parse(saved) as Record<string, string>;
+        const savedAccent = parseStoredRgb(vars["--nm-accent"]);
+        if (savedAccent) {
+          setRgb(savedAccent);
+        }
+      }
+    } catch {
+      // Ignore invalid saved theme payloads and keep defaults.
+    }
+
+    setHasRestoredTheme(true);
+
+    const handleThemeModeChange = (event: Event) => {
+      setThemeMode((event as CustomEvent<ThemeMode>).detail);
+    };
+
+    window.addEventListener("nm-theme-mode-change", handleThemeModeChange);
+    return () => window.removeEventListener("nm-theme-mode-change", handleThemeModeChange);
+  }, []);
+
+  useEffect(() => {
+    if (!hasRestoredTheme) {
+      return;
+    }
+
     const root = document.documentElement;
     const vars = pageThemeStyle as Record<string, string>;
 
@@ -361,7 +538,7 @@ export default function Home() {
 
     // Persist so other pages (e.g. /tools) can inherit the theme
     try { localStorage.setItem("nm-theme", JSON.stringify(vars)); } catch {}
-  }, [pageThemeStyle]);
+  }, [hasRestoredTheme, pageThemeStyle]);
 
   useEffect(() => {
     const body = document.body;
@@ -411,7 +588,7 @@ export default function Home() {
   };
 
   return (
-    <div className="nm-page" style={pageThemeStyle}>
+    <div className="nm-page" data-theme-mode={themeMode} style={pageThemeStyle}>
       {/* ── HERO ── */}
       <section className="nm-hero">
         <div className="nm-hero-inner">
@@ -438,6 +615,7 @@ export default function Home() {
             <div className="nm-search-row">
               <div className="nm-search-wrap">
                 <input
+                  suppressHydrationWarning
                   className="nm-search-input"
                   placeholder="Search any tool"
                   value={search}
@@ -743,15 +921,25 @@ export default function Home() {
           <div className="nm-about-badge">Simple Tools. Powerful Results.</div>
           <div className="nm-about-body">
             <p>
-              Toolmitra is an all-in-one platform designed to simplify the way you
-              work with digital files. Whether you need to compress images,
-              convert documents, or manage PDFs, Toolmitra provides fast and
-              reliable tools directly in your browser.
+              Toolmitra is built for people who need practical online tools without
+              the usual clutter, confusing steps, or slow desktop-style workflows.
+              Whether you are compressing images for a website, converting a PDF for
+              work, preparing SEO assets, or running everyday calculations, the goal
+              stays the same: help you finish the task quickly in a clean browser
+              experience.
             </p>
             <p>
-              Built with performance and privacy in mind, Toolmitra processes your
-              files efficiently so you can focus on your work without
-              unnecessary complexity.
+              The platform brings together image tools, document tools, video tools,
+              developer utilities, SEO helpers, and calculators in one place so you
+              do not have to jump between multiple websites for small but important
+              tasks. Toolmitra focuses on clarity, speed, and lightweight workflows
+              that feel easy on both desktop and mobile.
+            </p>
+            <p>
+              Built with performance and usability in mind, Toolmitra is designed to
+              make common digital work simpler. Instead of forcing users through
+              complicated interfaces, it gives straightforward tools that are fast to
+              understand, fast to use, and useful in real daily workflows.
             </p>
           </div>
         </div>

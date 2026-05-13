@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import type { ToolMeta } from "@/lib/tools";
+import { tools, type ToolMeta } from "@/lib/tools";
 import { getPublicSiteUrl } from "@/lib/env";
 
 const DEFAULT_SITE_URL = "https://toolmitra.com";
@@ -9,12 +9,15 @@ export const siteName = "Toolmitra";
 export const siteUrl = normalizeSiteUrl(getPublicSiteUrl(DEFAULT_SITE_URL));
 export const siteMetadataBase = new URL(siteUrl);
 export const defaultDescription =
-  "Free online tools for PDFs, images, developers, and calculators. Compress, convert, format, and calculate in your browser with Toolmitra.";
-export const defaultKeywords = [
+  "Free online tools for PDFs, images, videos, SEO, developers, and calculators. Compress, convert, format, optimize, and calculate in your browser with Toolmitra.";
+
+const baseKeywords = [
   "free online tools",
   "pdf tools",
   "image tools",
+  "video tools",
   "developer tools",
+  "seo tools",
   "calculators",
   "image compressor",
   "merge pdf",
@@ -25,9 +28,18 @@ export const defaultKeywords = [
 const categoryKeywords: Record<string, string[]> = {
   "Image Tools": ["image compressor", "image resizer", "image converter"],
   "Document Tools": ["pdf converter", "merge pdf", "split pdf"],
+  "Video Tools": ["video to mp3", "video cutter", "video compressor"],
   "Developer Tools": ["json formatter", "base64 encoder", "qr code generator"],
+  "SEO Tools": ["meta tag generator", "sitemap generator", "robots txt generator"],
   Calculators: ["emi calculator", "gst calculator", "sip calculator"],
 };
+
+const toolKeywords = tools.slice(0, 24).flatMap((tool) => [
+  tool.name.toLowerCase(),
+  `${tool.name.toLowerCase()} online`,
+]);
+
+export const defaultKeywords = uniqueKeywords([...baseKeywords, ...toolKeywords]);
 
 type BuildMetadataOptions = {
   title: string;
@@ -112,15 +124,19 @@ export function buildMetadata({
 export function buildToolDescription(tool: ToolMeta) {
   switch (tool.category) {
     case "Image Tools":
-      return `${tool.description} Use ${tool.name} online for free to process images directly in your browser with a fast and simple workflow.`;
+      return `${tool.description} ${tool.name} helps you handle image editing and optimization tasks directly in your browser with a faster, cleaner workflow that is easy to use on both desktop and mobile.`;
     case "Document Tools":
-      return `${tool.description} Use ${tool.name} online for free to manage PDFs and documents quickly without installing extra software.`;
+      return `${tool.description} ${tool.name} is designed to simplify common PDF and document tasks online so you can work faster without installing extra desktop software.`;
+    case "Video Tools":
+      return `${tool.description} ${tool.name} gives you a more practical way to handle everyday video tasks online, whether you need conversion, trimming, compression, or quick media extraction.`;
     case "Developer Tools":
-      return `${tool.description} Use ${tool.name} online for free for quick developer workflows in a clean browser-based workspace.`;
+      return `${tool.description} ${tool.name} supports quick browser-based developer workflows with clean output, simple controls, and a faster path from input to result.`;
+    case "SEO Tools":
+      return `${tool.description} ${tool.name} helps you create practical SEO assets and optimization markup in a simple browser workflow that is easier to review, copy, and publish.`;
     case "Calculators":
-      return `${tool.description} Use ${tool.name} online for free and get instant results with a simple calculator interface.`;
+      return `${tool.description} ${tool.name} gives you instant results through a simple calculator interface built for quick everyday use.`;
     default:
-      return `${tool.description} Use ${tool.name} online for free with Toolmitra.`;
+      return `${tool.description} Use ${tool.name} online for free with Toolmitra in a clean browser-based workflow.`;
   }
 }
 
@@ -151,6 +167,11 @@ export function buildWebSiteStructuredData() {
     name: siteName,
     url: absoluteUrl("/"),
     description: defaultDescription,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${absoluteUrl("/tools/")}?search={search_term_string}`,
+      "query-input": "required name=search_term_string",
+    },
   };
 }
 
@@ -224,5 +245,43 @@ export function buildToolStructuredData(tool: ToolMeta) {
     url: absoluteUrl(`/tools/${tool.slug}/`),
     description: buildToolDescription(tool),
     isAccessibleForFree: true,
+    featureList: [
+      `Free ${tool.name.toLowerCase()}`,
+      `${tool.category.toLowerCase()} workflow`,
+      "Browser-based processing",
+    ],
+  };
+}
+
+export function buildSiteFaqStructuredData() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What tools are available on Toolmitra?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Toolmitra offers image tools, document tools, video tools, developer tools, SEO tools, and calculators that run in the browser.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can I use Toolmitra tools for free?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, Toolmitra provides free browser-based tools for common file conversion, formatting, optimization, and calculator workflows.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Do Toolmitra tools work on mobile and desktop?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, Toolmitra is designed to work across modern desktop and mobile browsers.",
+        },
+      },
+    ],
   };
 }

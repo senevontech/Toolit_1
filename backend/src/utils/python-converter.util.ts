@@ -3,43 +3,75 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 
-// nest-cli.json copies src/scripts/*.py → dist/scripts/*.py during build/watch
-// __dirname in dev/prod resolves to .../dist/utils, so go one level up to dist/scripts
-const SCRIPT_PATH = path.join(__dirname, '..', 'scripts', 'convert_pdf.py');
+function resolveScriptPath(): string {
+  const candidates = [
+    path.join(__dirname, '..', 'scripts', 'convert_pdf.py'),
+    path.join(__dirname, '..', '..', 'src', 'scripts', 'convert_pdf.py'),
+    path.join(process.cwd(), 'src', 'scripts', 'convert_pdf.py'),
+    path.join(process.cwd(), 'dist', 'scripts', 'convert_pdf.py'),
+  ];
 
-/**
- * Detect which python binary is available on the system.
- * Tries: python3 → python
- */
+  const scriptPath = candidates.find((candidate) => fs.existsSync(candidate));
+  return scriptPath ?? candidates[0];
+}
+
+const SCRIPT_PATH = resolveScriptPath();
+
 function getPythonBin(): string {
-  // On Linux/Mac (Render server) it is always "python3"
-  // On Windows it is usually "python"
   return process.platform === 'win32' ? 'python' : 'python3';
 }
 
+export type PythonConversionMode =
+  | 'docx'
+  | 'xlsx'
+  | 'pptx'
+  | 'protect'
+  | 'unlock'
+  | 'excel_pdf'
+  | 'ppt_pdf'
+  | 'word_pdf'
+  | 'word_html';
+
+function getOutputExtension(mode: PythonConversionMode): string {
+  if (mode === 'protect' || mode === 'unlock') return 'pdf';
+  if (mode.endsWith('_pdf')) return 'pdf';
+  if (mode === 'word_html') return 'html';
+  return mode;
+}
+
 /**
- * Run the Python conversion script and return the result as a Buffer.
- *
- * @param mode   "docx" | "xlsx" | "pptx"
- * @param inputFilePath  Absolute path to the uploaded PDF
+ * Run the Python conversion engine.
  */
-export async function convertPdfWithPython(
-  mode: 'docx' | 'xlsx' | 'pptx',
+export async function convertWithPython(
+  mode: PythonConversionMode,
   inputFilePath: string,
+  password?: string
 ): Promise<Buffer> {
-  const ext = mode;
+
+  const ext = getOutputExtension(mode);
+
   const outputFilePath = path.join(
     os.tmpdir(),
     `converted_${Date.now()}.${ext}`,
   );
 
   return new Promise((resolve, reject) => {
-    const py = spawn(getPythonBin(), [
+
+    const args = [
       SCRIPT_PATH,
       mode,
       inputFilePath,
       outputFilePath,
-    ]);
+    ];
+
+    // 🔥 support BOTH protect + unlock
+    if ((mode === 'protect' || mode === 'unlock') && password) {
+      args.push(password);
+    }
+
+    console.log('Running Python converter:', args);
+
+    const py = spawn(getPythonBin(), args);
 
     let stderr = '';
 
@@ -48,22 +80,22 @@ export async function convertPdfWithPython(
     });
 
     py.on('close', (code: number) => {
-      // Clean up the uploaded input file
+
+      // delete uploaded input file
       if (fs.existsSync(inputFilePath)) {
         fs.unlinkSync(inputFilePath);
       }
 
       if (code !== 0) {
-        // Clean up the output file if it was left behind
         if (fs.existsSync(outputFilePath)) {
           fs.unlinkSync(outputFilePath);
         }
         console.error('Python conversion error:', stderr);
-        return reject(new Error('PDF conversion failed. ' + (stderr || '')));
+        return reject(new Error('File conversion failed. ' + stderr));
       }
 
       if (!fs.existsSync(outputFilePath)) {
-        return reject(new Error('Output file was not produced by the converter.'));
+        return reject(new Error('Output file not generated.'));
       }
 
       try {
@@ -78,9 +110,11 @@ export async function convertPdfWithPython(
     py.on('error', (err: Error) => {
       reject(
         new Error(
-          `Could not launch Python. Make sure Python is installed. Details: ${err.message}`,
+          `Python not found. Install Python. Details: ${err.message}`,
         ),
       );
     });
   });
 }
+
+export const convertPdfWithPython = convertWithPython;

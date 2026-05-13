@@ -5,6 +5,7 @@ import {
   buildCollectionPageStructuredData,
   buildMetadata,
   buildOrganizationStructuredData,
+  buildSiteFaqStructuredData,
   buildWebSiteStructuredData,
 } from "@/lib/seo";
 
@@ -13,13 +14,15 @@ import HomePageClient from "./HomePageClient";
 export const metadata = buildMetadata({
   title: "Free Online Tools for PDF, Image, JSON and Calculators",
   description:
-    "Use Toolmitra to compress images, merge PDFs, format JSON, generate QR codes, and run practical calculators in your browser for free.",
+    "Use Toolmitra to compress images, merge PDFs, convert videos, format JSON, generate SEO tags, and run practical calculators in your browser for free.",
   path: "/",
   keywords: [
     "free pdf tools",
     "image compressor online",
     "merge pdf online",
+    "video tools online",
     "json formatter online",
+    "seo tools online",
     "qr code generator online",
   ],
 });
@@ -37,11 +40,12 @@ export default function HomePage() {
         data={[
           buildWebSiteStructuredData(),
           buildOrganizationStructuredData(),
+          buildSiteFaqStructuredData(),
           buildCollectionPageStructuredData({
             path: "/",
             title: "Toolmitra Home",
             description:
-              "Browse online tools for PDFs, images, developer utilities, and calculators.",
+              "Browse online tools for PDFs, images, videos, SEO utilities, developer workflows, and calculators.",
             items: featuredTools,
           }),
         ]}

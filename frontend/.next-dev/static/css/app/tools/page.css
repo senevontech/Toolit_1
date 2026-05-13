@@ -1,0 +1,597 @@
+/*!************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[3]!./src/app/home2/alltools.css ***!
+  \************************************************************************************************************************************************************************************************************************************************************************/
+/* ============================================================
+   TOOLMITRA — All Tools Page — Neumorphism (screenshot-matched)
+   Base: #ece8e1  |  per-category accent via --cat-color
+   ============================================================ */
+
+:root {
+  --at-bg:    #ece8e1;
+  --at-text:  #1c1612;
+  --at-muted: #8e867e;
+
+  --at-sh-out:   6px 6px 16px #cec8c0, -6px -6px 16px #ffffff;
+  --at-sh-in:    inset 4px 4px 12px #cec8c0, inset -4px -4px 12px #ffffff;
+  --at-sh-lg:    10px 10px 24px #c8c2ba, -10px -10px 24px #ffffff;
+  --at-sh-sm:    3px 3px 8px  #cec8c0, -3px -3px 8px  #ffffff;
+  --at-sh-press: inset 3px 3px 9px  #c8c2ba, inset -3px -3px 9px  #ffffff;
+
+  --at-r-sm:   12px;
+  --at-r-md:   18px;
+  --at-r-lg:   24px;
+  --at-r-pill: 999px;
+}
+
+/* ── Page shell ── */
+.at-page {
+  /* Derive --at-* from the live color engine variables so this page
+     responds to the home-page color engine. Fallbacks match the
+     original static values for pages loaded without the engine. */
+  --at-bg:       var(--nm-bg,                   #ece8e1);
+  --at-text:     var(--nm-text,                 #1c1612);
+  --at-muted:    var(--nm-text-muted,           #8e867e);
+  --at-sh-out:   var(--nm-shadow-out,           6px 6px 16px #cec8c0, -6px -6px 16px #ffffff);
+  --at-sh-in:    var(--nm-shadow-in,            inset 4px 4px 12px #cec8c0, inset -4px -4px 12px #ffffff);
+  --at-sh-lg:    var(--nm-shadow-lg,            10px 10px 24px #c8c2ba, -10px -10px 24px #ffffff);
+  --at-sh-sm:    3px 3px 8px var(--nm-shadow-dark-color,  #cec8c0), -3px -3px 8px var(--nm-shadow-light-color,  #ffffff);
+  --at-sh-press: var(--nm-shadow-press,         inset 3px 3px 9px #c8c2ba, inset -3px -3px 9px #ffffff);
+
+  min-height: 100vh;
+  background: var(--at-bg);
+  color: var(--at-text);
+  font-family: var(--font-geometric), system-ui, sans-serif;
+  transition: background 0.45s ease, color 0.35s ease;
+}
+
+/* ============================================================
+   SEARCH BAR (top, standalone)
+   ============================================================ */
+.at-top {
+  padding: 36px 28px 20px;
+}
+.at-top__inner {
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+.at-search {
+  max-width: 460px;
+}
+.at-search__field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px 0 20px;
+  border-radius: var(--at-r-pill);
+  background: var(--at-bg);
+  box-shadow: var(--at-sh-in);
+  height: 52px;
+}
+.at-search__icon {
+  color: var(--at-muted);
+  flex-shrink: 0;
+}
+.at-search__input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.93rem;
+  color: var(--at-text);
+  font-family: inherit;
+}
+.at-search__input::-moz-placeholder { color: var(--at-muted); }
+.at-search__input::placeholder { color: var(--at-muted); }
+
+.at-search__clear {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: var(--at-bg);
+  box-shadow: var(--at-sh-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--at-muted);
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: box-shadow 0.2s, transform 0.14s;
+}
+.at-search__clear:hover  { box-shadow: var(--at-sh-in); }
+.at-search__clear:active { transform: scale(0.9); }
+
+/* ============================================================
+   CATEGORY CARDS — main visual focus
+   ============================================================ */
+.at-cats {
+  padding: 0 28px 12px;
+}
+.at-cats__inner {
+  max-width: 1160px;
+  margin: 0 auto;
+}
+.at-cats__eyebrow {
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: var(--at-muted);
+  margin: 0 0 14px;
+}
+.at-cats__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* ── Category Card ── */
+.at-cat-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px 20px 24px;
+  border-radius: var(--at-r-lg);
+  background: var(--at-bg);
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  /* Raised */
+  box-shadow: var(--at-sh-lg);
+  overflow: hidden;
+  transition:
+    box-shadow 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    transform   0.2s  cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.at-cat-card:not(.at-cat-card--active):hover {
+  box-shadow: 8px 8px 18px #c4beb6, -8px -8px 18px #ffffff;
+}
+.at-cat-card:active {
+  transform: scale(0.97);
+  box-shadow: var(--at-sh-in);
+}
+/* Active: stays raised but with color accent */
+.at-cat-card--active {
+  box-shadow: var(--at-sh-lg);
+}
+
+/* Count badge — top right, small neumorphic circle */
+.at-cat-card__badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: var(--at-r-pill);
+  background: var(--at-bg);
+  box-shadow: var(--at-sh-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--at-muted);
+  transition: color 0.22s;
+}
+.at-cat-card--active .at-cat-card__badge {
+  color: var(--cat-color, #5b8dee);
+}
+
+/* Icon square */
+.at-cat-card__icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Inactive: inset/sunken neutral */
+  background: var(--at-bg);
+  box-shadow: var(--at-sh-in);
+  color: var(--at-muted);
+  transition: background 0.26s, color 0.22s, box-shadow 0.22s;
+}
+.at-cat-card--active .at-cat-card__icon {
+  /* Active: solid colored with white icon */
+  background: var(--cat-color, #5b8dee);
+  color: #fff;
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.14),
+    -2px -2px 6px rgba(255, 255, 255, 0.28);
+}
+
+/* Text block */
+.at-cat-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.at-cat-card__name {
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--at-text);
+  line-height: 1;
+  transition: color 0.22s;
+}
+.at-cat-card--active .at-cat-card__name {
+  color: var(--cat-color, #5b8dee);
+}
+.at-cat-card__desc {
+  font-size: 0.76rem;
+  color: var(--at-muted);
+  line-height: 1.4;
+}
+
+/* Active bottom underline stripe */
+.at-cat-card--active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 20px;
+  right: 20px;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--cat-color, #5b8dee);
+}
+
+/* ============================================================
+   TOOLS SECTION
+   ============================================================ */
+.at-tools {
+  padding: 24px 28px 64px;
+}
+.at-tools__inner {
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+/* Section header */
+.at-tools__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.at-tools__title {
+  font-size: clamp(1.7rem, 3.5vw, 2.2rem);
+  font-weight: 800;
+  margin: 0 0 5px;
+  color: var(--at-text);
+  letter-spacing: -0.5px;
+}
+.at-tools__count {
+  font-size: 0.78rem;
+  color: var(--at-muted);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* 3-column grid (matches screenshot) */
+.at-tools__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  animation: at-grid-in 0.3s ease both;
+}
+
+@keyframes at-grid-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Tool Card (horizontal: icon | body | arrow) ── */
+.at-tool-card {
+  display: grid;
+  grid-template-columns: 48px 1fr 18px;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 14px 16px 16px;
+  border-radius: var(--at-r-md);
+  background: var(--at-bg);
+  box-shadow: var(--at-sh-out);
+  text-decoration: none;
+  color: var(--at-text);
+  transition:
+    box-shadow 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    transform   0.17s;
+}
+.at-tool-card:hover {
+  box-shadow: var(--at-sh-in);
+}
+.at-tool-card:active {
+  transform: scale(0.97);
+  box-shadow: var(--at-sh-press);
+}
+
+/* Icon well — inset square */
+.at-tool-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--at-bg);
+  box-shadow: var(--at-sh-in);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cat-color, #5b8dee);
+  flex-shrink: 0;
+}
+
+/* Body */
+.at-tool-card__body { min-width: 0; }
+
+.at-tool-card__cat {
+  display: block;
+  font-size: 0.63rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--cat-color, #5b8dee);
+  margin-bottom: 3px;
+}
+.at-tool-card__name {
+  font-size: 0.93rem;
+  font-weight: 700;
+  margin: 0 0 3px;
+  color: var(--at-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.at-tool-card__desc {
+  font-size: 0.76rem;
+  color: var(--at-muted);
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* Arrow */
+.at-tool-card__arrow {
+  color: var(--cat-color, #5b8dee);
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: transform 0.2s ease, opacity 0.18s;
+}
+.at-tool-card:hover .at-tool-card__arrow {
+  transform: translateX(3px);
+  opacity: 1;
+}
+
+/* ── Utility buttons ── */
+.at-ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  border-radius: var(--at-r-pill);
+  background: var(--at-bg);
+  border: none;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--at-muted);
+  box-shadow: var(--at-sh-out);
+  font-family: inherit;
+  transition: box-shadow 0.22s, transform 0.14s;
+}
+.at-ghost-btn:hover  { box-shadow: var(--at-sh-in); }
+.at-ghost-btn:active { transform: scale(0.96); box-shadow: var(--at-sh-in); }
+
+.at-accent-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 28px;
+  border-radius: var(--at-r-pill);
+  background: #e07a5f;
+  border: none;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  font-family: inherit;
+  box-shadow: 5px 5px 12px #c5bdb6, -3px -3px 8px rgba(255,255,255,0.5),
+              inset 0 1px 1px rgba(255,255,255,0.22);
+  text-decoration: none;
+  transition: box-shadow 0.22s, transform 0.14s;
+}
+.at-accent-btn:hover  { box-shadow: var(--at-sh-in); }
+.at-accent-btn:active { transform: scale(0.96); box-shadow: var(--at-sh-press); }
+
+/* ── Empty state ── */
+.at-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 72px 24px;
+  text-align: center;
+  color: var(--at-muted);
+}
+
+/* ============================================================
+   FINAL /tools PAGE FLATTENING
+   Same theme background across sections, no section/card shadows,
+   and remove inherited inner-input shadow from the search pill.
+   ============================================================ */
+
+.tools-directory-hero {
+  background: var(--nm-bg, var(--at-bg)) !important;
+  box-shadow: none !important;
+}
+
+.tools-directory-hero__kicker {
+  color: var(--nm-text-muted, var(--at-muted)) !important;
+  background: color-mix(in srgb, var(--nm-surface, var(--at-bg)) 88%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--nm-text, var(--at-text)) 8%, transparent) !important;
+  box-shadow: none !important;
+}
+
+.tools-directory-hero__title {
+  color: var(--nm-text, var(--at-text)) !important;
+}
+
+.tools-directory-hero__desc {
+  color: var(--nm-text-muted, var(--at-muted)) !important;
+}
+
+.at-page,
+.at-top,
+.at-cats,
+.at-tools,
+.at-top__inner,
+.at-cats__inner,
+.at-tools__inner {
+  background: var(--nm-bg, var(--at-bg)) !important;
+  box-shadow: none !important;
+}
+
+.at-search__field {
+  background: linear-gradient(145deg, var(--nm-surface, var(--at-bg)), var(--nm-bg, var(--at-bg))) !important;
+  box-shadow:
+    10px 12px 18px color-mix(in srgb, var(--nm-shadow-dark-color, #000) 24%, transparent),
+    -8px -8px 14px color-mix(in srgb, var(--nm-shadow-light-color, #fff) 48%, transparent),
+    inset 1px 1px 0 color-mix(in srgb, var(--nm-shadow-light-color, #fff) 24%, transparent) !important;
+}
+
+.at-search__input {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.at-search__input::-moz-placeholder {
+  color: var(--nm-text-muted, var(--at-muted)) !important;
+}
+
+.at-search__input::placeholder {
+  color: var(--nm-text-muted, var(--at-muted)) !important;
+}
+
+.at-cat-card,
+.at-tool-card,
+.at-empty,
+.at-empty__icon {
+  background: var(--nm-bg, var(--at-bg)) !important;
+  box-shadow: none !important;
+}
+
+.at-cat-card:not(.at-cat-card--active):hover,
+.at-cat-card--active,
+.at-tool-card:hover,
+.at-tool-card:active,
+.at-ghost-btn:hover,
+.at-ghost-btn:active,
+.at-accent-btn:hover,
+.at-accent-btn:active {
+  box-shadow: none !important;
+}
+
+.at-cat-card__badge,
+.at-cat-card__icon,
+.at-tool-card__icon {
+  box-shadow: none !important;
+}
+
+.at-cat-card__name,
+.at-tools__title,
+.at-tool-card__name {
+  color: var(--nm-text, var(--at-text)) !important;
+}
+
+.at-cat-card__desc,
+.at-tools__count,
+.at-tool-card__desc,
+.at-empty,
+.at-empty p {
+  color: var(--nm-text-muted, var(--at-muted)) !important;
+}
+.at-empty__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--at-bg);
+  box-shadow: var(--at-sh-in);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--at-muted);
+}
+.at-empty h3 { margin: 0; font-size: 1.2rem; font-weight: 700; color: var(--at-text); }
+.at-empty p  { margin: 0; font-size: 0.88rem; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+/* 1100px: 2-col tools */
+@media (max-width: 1100px) {
+  .at-tools__grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* 768px: 2-col categories, 1-col tools */
+@media (max-width: 768px) {
+  .at-top   { padding: 24px 18px 16px; }
+  .at-cats  { padding: 0 18px 8px; }
+  .at-tools { padding: 20px 18px 44px; }
+
+  .at-cats__grid  { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .at-tools__grid { grid-template-columns: 1fr; }
+}
+
+/* 480px */
+@media (max-width: 480px) {
+  .at-top   { padding: 20px 14px 14px; }
+  .at-cats  { padding: 0 14px 6px; }
+  .at-tools { padding: 16px 14px 36px; }
+
+  .at-search { max-width: 100%; }
+  .at-cats__grid { gap: 10px; }
+
+  .at-cat-card  { padding: 16px 14px 20px; gap: 10px; }
+  .at-cat-card__icon { width: 48px; height: 48px; border-radius: 13px; }
+  .at-cat-card__name { font-size: 0.94rem; }
+  .at-cat-card__desc { display: none; }
+
+  .at-tool-card { padding: 13px 12px; gap: 12px; }
+  .at-tool-card__icon { width: 42px; height: 42px; }
+}
+
+/* 360px: very small phones */
+@media (max-width: 360px) {
+  .at-top   { padding: 16px 12px 12px; }
+  .at-cats  { padding: 0 12px 6px; }
+  .at-tools { padding: 14px 12px 28px; }
+
+  .at-cats__grid  { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .at-cat-card    { padding: 12px 10px 16px; }
+
+  .at-tool-card   { grid-template-columns: 40px 1fr 16px; padding: 11px 10px; gap: 10px; }
+  .at-tool-card__icon { width: 40px; height: 40px; border-radius: 10px; }
+  .at-tool-card__name { font-size: 0.85rem; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .at-cat-card,
+  .at-tool-card,
+  .at-ghost-btn,
+  .at-accent-btn,
+  .at-search__clear { transition: none; }
+  .at-tools__grid { animation: none; }
+}
+

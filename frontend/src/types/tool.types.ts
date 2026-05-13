@@ -3,7 +3,9 @@ import { ComponentType } from "react";
 export type ToolCategory =
   | "Image Tools"
   | "Document Tools"
+  | "Video Tools"
   | "Developer Tools"
+  | "SEO Tools"
   | "Calculators";
 
 export interface Tool {

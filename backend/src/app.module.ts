@@ -13,6 +13,7 @@ import { RequestLoggingMiddleware } from './common/request-logging.middleware';
 import { RateLimitMiddleware } from './common/rate-limit.middleware';
 import { validateBackendEnv } from './config/env.validation';
 import { ConverterModule } from './converter/converter.module';
+import { DomainModule } from './domain/domain.module';
 
 @Module({
   controllers: [HealthController],
@@ -32,6 +33,7 @@ import { ConverterModule } from './converter/converter.module';
       }),
     }),
     ConverterModule,
+    DomainModule,
   ],
 })
 export class AppModule implements NestModule {

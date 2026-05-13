@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Body,
   Controller,
   Get,
   NotFoundException,
@@ -11,9 +12,10 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfig } from '../config/multer.config';
 import { Request, Response } from 'express';
 import * as fs from 'fs';
+import { multerConfig } from '../config/multer.config';
+import { ConverterService } from './converter.service';
 import { ConversionQueueService } from './conversion-queue.service';
 import {
   cleanupExpiredOutputs,
@@ -23,7 +25,10 @@ import {
 
 @Controller('converter')
 export class ConverterController {
-  constructor(private readonly queueService: ConversionQueueService) {}
+  constructor(
+    private readonly queueService: ConversionQueueService,
+    private readonly converterService: ConverterService,
+  ) {}
 
   @Post('pdf-word')
   @UseInterceptors(FileInterceptor('file', multerConfig))
@@ -65,6 +70,113 @@ export class ConverterController {
   @UseInterceptors(FileInterceptor('file', multerConfig))
   async wordToHtml(@UploadedFile() file: Express.Multer.File, @Req() req: Request) {
     return this.enqueueConversion('word-html', file, req.requestId);
+  }
+
+  @Post('video-mp3')
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  async videoToMp3(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('bitrate') bitrate: string,
+    @Res() res: Response,
+  ) {
+    if (!file) throw new BadRequestException('File not uploaded');
+
+    const result = await this.converterService.videoToMp3(file.path, bitrate);
+
+    res.set({
+      'Content-Type': 'audio/mpeg',
+      'Content-Disposition': 'attachment; filename=converted.mp3',
+    });
+
+    res.send(result);
+  }
+
+  @Post('video-compress')
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  async videoCompress(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('preset') preset: string,
+    @Body('resolution') resolution: string,
+    @Res() res: Response,
+  ) {
+    if (!file) throw new BadRequestException('File not uploaded');
+
+    const result = await this.converterService.compressVideo(
+      file.path,
+      preset,
+      resolution,
+    );
+
+    res.set({
+      'Content-Type': 'video/mp4',
+      'Content-Disposition': 'attachment; filename=compressed.mp4',
+    });
+
+    res.send(result);
+  }
+
+  @Post('video-cut')
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  async videoCut(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('startTime') startTime: string,
+    @Body('endTime') endTime: string,
+    @Res() res: Response,
+  ) {
+    if (!file) throw new BadRequestException('File not uploaded');
+
+    const result = await this.converterService.cutVideo(
+      file.path,
+      startTime,
+      endTime,
+    );
+
+    res.set({
+      'Content-Type': 'video/mp4',
+      'Content-Disposition': 'attachment; filename=clip.mp4',
+    });
+
+    res.send(result);
+  }
+
+  @Post('pdf-protect')
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  async pdfProtect(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('password') password: string,
+    @Res() res: Response,
+  ) {
+    if (!file) throw new BadRequestException('File not uploaded');
+    if (!password) throw new BadRequestException('Password is required');
+
+    const result = await this.converterService.pdfProtect(file.path, password);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=protected.pdf',
+    });
+
+    res.send(result);
+  }
+
+  @Post('pdf-unlock')
+  @UseInterceptors(FileInterceptor('file', multerConfig))
+  async pdfUnlock(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('password') password: string,
+    @Res() res: Response,
+  ) {
+    if (!file) throw new BadRequestException('File not uploaded');
+    if (!password) throw new BadRequestException('Password is required');
+
+    const result = await this.converterService.pdfUnlock(file.path, password);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=unlocked.pdf',
+    });
+
+    res.send(result);
   }
 
   @Get('jobs/:jobId')

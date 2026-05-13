@@ -21,7 +21,7 @@ export const multerConfig = {
   }),
 
   limits: {
-    fileSize: 20 * 1024 * 1024, // 20MB limit
+    fileSize: 200 * 1024 * 1024, // 200MB limit
   },
 
   fileFilter: (req, file, cb) => {
@@ -34,6 +34,13 @@ export const multerConfig = {
       '.ppt',
       '.pptx',
       '.pdf',
+      '.txt',
+      '.mp4',
+      '.mov',
+      '.m4v',
+      '.webm',
+      '.mkv',
+      '.avi',
     ];
 
     const ext = extname(file.originalname).toLowerCase();
