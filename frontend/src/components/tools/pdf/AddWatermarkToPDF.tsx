@@ -50,7 +50,7 @@ export default function AddWatermarkToPDF() {
   };
 
   return (
-    <div className="max-w-xl mx-auto bg-white p-6 rounded-xl shadow space-y-4">
+    <div className="space-y-4">
       <h2 className="text-2xl font-bold text-orange-500">Add Watermark to PDF</h2>
 
       <input type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />

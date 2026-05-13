@@ -79,7 +79,7 @@ export const getSavedThemeMode = (): ThemeMode => {
     // Keep default when storage is unavailable.
   }
 
-  return "night";
+  return "day";
 };
 
 export const applyThemeMode = (mode: ThemeMode) => {

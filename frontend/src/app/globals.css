@@ -7343,4 +7343,160 @@ html[data-theme-mode="night"] body {
   }
 }
 
+/* Tool page final pass: single workspace surface + deep dynamic neumorphism. */
+.tool-page--clean {
+  --tool-lift:
+    18px 18px 34px color-mix(in srgb, var(--nm-shadow-dark-color) 42%, transparent),
+    -14px -14px 28px color-mix(in srgb, var(--nm-shadow-light-color) 84%, transparent),
+    inset 1px 1px 0 color-mix(in srgb, var(--nm-shadow-light-color) 52%, transparent);
+  --tool-lift-hover:
+    24px 26px 40px color-mix(in srgb, var(--nm-shadow-dark-strong-color) 50%, transparent),
+    -18px -18px 34px color-mix(in srgb, var(--nm-shadow-light-color) 92%, transparent),
+    inset 1px 1px 0 color-mix(in srgb, var(--nm-shadow-light-color) 58%, transparent);
+  --tool-press:
+    inset 12px 12px 24px color-mix(in srgb, var(--nm-shadow-dark-color) 46%, transparent),
+    inset -10px -10px 20px color-mix(in srgb, var(--nm-shadow-light-color) 82%, transparent);
+}
+
+.tool-page--clean .tool-page__hero,
+.tool-page--clean .tool-page__workspace--clean {
+  position: relative !important;
+  overflow: hidden !important;
+  border-radius: var(--neu-radius-lg) !important;
+  box-shadow: var(--tool-lift) !important;
+  transition:
+    transform 340ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 340ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 260ms ease !important;
+}
+
+.tool-page--clean .tool-page__hero::before,
+.tool-page--clean .tool-page__workspace--clean::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 16% 18%, color-mix(in srgb, var(--nm-shadow-light-color) 92%, transparent), transparent 36%),
+    linear-gradient(125deg, color-mix(in srgb, var(--nm-shadow-light-color) 24%, transparent), transparent 52%);
+  opacity: 0.82;
+}
+
+@media (hover: hover) {
+  .tool-page--clean .tool-page__hero:hover,
+  .tool-page--clean .tool-page__workspace--clean:hover {
+    transform: translateY(-3px) scale(1.003) !important;
+    box-shadow: var(--tool-lift-hover) !important;
+  }
+}
+
+.tool-page--clean .tool-page__hero:active,
+.tool-page--clean .tool-page__workspace--clean:active {
+  transform: translateY(1px) scale(0.998) !important;
+  box-shadow: var(--tool-press) !important;
+  transition:
+    transform 95ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 95ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.tool-page--clean .tool-page__workspace-body > * {
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+.tool-page--clean .tool-page__workspace-body > :is(.bg-white, .bg-gray-100, .bg-gray-200, .bg-gray-300, .bg-slate-700\/40, .bg-slate-700\/60, .bg-black\/10) {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tool-page--clean .tool-page__workspace-body > [class*="rounded"] {
+  border-radius: 0 !important;
+}
+
+.tool-page--clean .tool-page__workspace-body > [class*="shadow"] {
+  box-shadow: none !important;
+}
+
+.tool-page--clean .tool-page__workspace-body :is(.upload-zone, .neu-inset-panel, .border-2.border-dashed, .flex.border, .flex.items-center.border, .flex.justify-between.border) {
+  border-radius: var(--neu-radius-md) !important;
+  transition:
+    transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 280ms ease,
+    filter 220ms ease !important;
+}
+
+@media (hover: hover) {
+  .tool-page--clean .tool-page__workspace-body :is(.upload-zone, .neu-inset-panel, .border-2.border-dashed, .flex.border, .flex.items-center.border, .flex.justify-between.border):hover {
+    transform: translateY(-2px);
+    box-shadow:
+      15px 16px 28px color-mix(in srgb, var(--nm-shadow-dark-color) 34%, transparent),
+      -10px -10px 22px color-mix(in srgb, var(--nm-shadow-light-color) 76%, transparent),
+      inset 1px 1px 0 color-mix(in srgb, var(--nm-shadow-light-color) 44%, transparent) !important;
+    filter: saturate(1.02);
+  }
+}
+
+.tool-page--clean .tool-page__workspace-body :is(.upload-zone, .neu-inset-panel, .border-2.border-dashed, .flex.border, .flex.items-center.border, .flex.justify-between.border):active {
+  transform: translateY(1px) scale(0.995);
+  box-shadow: var(--tool-press) !important;
+  transition:
+    transform 95ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 95ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Studio category cards: keep them lighter and neutral (not primary accent fill). */
+.studio-page .studio-browser-cat {
+  color: var(--studio-text) !important;
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--nm-surface) 88%, white 12%),
+      color-mix(in srgb, var(--nm-bg) 92%, white 8%)
+    ) !important;
+  box-shadow:
+    20px 20px 34px color-mix(in srgb, var(--nm-shadow-dark-color) 34%, transparent),
+    -12px -12px 24px color-mix(in srgb, var(--nm-shadow-light-color) 82%, transparent),
+    inset 1px 1px 0 color-mix(in srgb, var(--nm-shadow-light-color) 58%, transparent) !important;
+}
+
+.studio-page .studio-browser-cat:hover {
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--nm-surface) 90%, white 10%),
+      color-mix(in srgb, var(--nm-bg) 94%, white 6%)
+    ) !important;
+  box-shadow:
+    inset 8px 8px 16px color-mix(in srgb, var(--nm-shadow-dark-color) 24%, transparent),
+    inset -8px -8px 16px color-mix(in srgb, var(--nm-shadow-light-color) 74%, transparent) !important;
+}
+
+.studio-page .studio-browser-cat:active {
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--nm-bg) 90%, white 10%),
+      color-mix(in srgb, var(--nm-surface) 92%, white 8%)
+    ) !important;
+  box-shadow:
+    inset 10px 10px 18px color-mix(in srgb, var(--nm-shadow-dark-color) 30%, transparent),
+    inset -8px -8px 16px color-mix(in srgb, var(--nm-shadow-light-color) 76%, transparent) !important;
+}
+
+.studio-page .studio-browser-cat--active {
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--nm-surface) 84%, white 16%),
+      color-mix(in srgb, var(--nm-bg) 90%, white 10%)
+    ) !important;
+  box-shadow:
+    inset 9px 9px 18px color-mix(in srgb, var(--nm-shadow-dark-color) 26%, transparent),
+    inset -8px -8px 16px color-mix(in srgb, var(--nm-shadow-light-color) 76%, transparent),
+    0 10px 20px color-mix(in srgb, var(--nm-accent) 22%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--nm-accent) 32%, transparent) !important;
+}
+
 

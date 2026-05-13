@@ -96,7 +96,7 @@ export default function ToolStudioClient() {
   const requestedCategory = searchParams.get("category");
   const [activeCategory, setActiveCategory] = useState<string>(categories[0] ?? "");
   const [search, setSearch] = useState("");
-  const [themeMode, setThemeMode] = useState<ThemeMode>("night");
+  const [themeMode, setThemeMode] = useState<ThemeMode>("day");
   const deferredSearch = useDeferredValue(search);
 
   useEffect(() => {

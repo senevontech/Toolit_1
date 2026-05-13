@@ -5,13 +5,21 @@ import { Moon, Sun } from "lucide-react";
 import { applyThemeMode, getSavedThemeMode, type ThemeMode } from "./themeModes";
 
 export default function ThemeModeToggle() {
-  const [mode, setMode] = useState<ThemeMode>("night");
+  const [mode, setMode] = useState<ThemeMode>("day");
 
   useEffect(() => {
     const initialMode = getSavedThemeMode();
 
     setMode(initialMode);
-    applyThemeMode(initialMode);
+  }, []);
+
+  useEffect(() => {
+    const handleThemeModeChange = (event: Event) => {
+      setMode((event as CustomEvent<ThemeMode>).detail);
+    };
+
+    window.addEventListener("nm-theme-mode-change", handleThemeModeChange);
+    return () => window.removeEventListener("nm-theme-mode-change", handleThemeModeChange);
   }, []);
 
   const nextMode = mode === "night" ? "day" : "night";

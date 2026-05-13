@@ -302,7 +302,7 @@ export default function Home() {
   const [rgb, setRgb] = useState<RGBColor>(INITIAL_RGB);
   const [isThemeMeterOpen, setIsThemeMeterOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const [themeMode, setThemeMode] = useState<ThemeMode>("night");
+  const [themeMode, setThemeMode] = useState<ThemeMode>("day");
   const [hasRestoredTheme, setHasRestoredTheme] = useState(false);
 
   const primaryFeaturedTools = useMemo(
